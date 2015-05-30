@@ -34,3 +34,54 @@ std::string WARC::Reader::readLine(std::istream& input) {
 
     return line;
 }
+
+void WARC::Reader::parseHeaders(std::istream& input, header_t& headers) {
+    std::string lastKey;
+
+    while(true) {
+        std::string header = WARC::Reader::readLine(input);
+        if(header.empty()) {
+            break;
+        }
+
+        // headers can span multiple lines when prepended with SP or HT
+        size_t beginKey = header.find_first_not_of(" \t");
+        if(beginKey == 0) {
+            // new header field
+            std::string key, value;
+
+            size_t separator = header.find_first_of(':');
+            if(separator == std::string::npos || separator == 0) {
+                throw WARC::Exception(std::string("Invalid WARC header: '")
+                                      .append(header)
+                                      .append("' at ")
+                                      .append(std::to_string(input.tellg())));
+            }
+            key = header.substr(0,separator);
+
+            size_t beginValue = header.find_first_not_of(" \t", separator + 1);
+            if(beginValue == std::string::npos) {
+                // empty value (probably continued on next line)
+            } else {
+                value = header.substr(beginValue);
+            }
+
+            headers.insert(std::make_pair(key, value));
+            lastKey = key;
+        } else if(beginKey == std::string::npos) {
+            throw WARC::Exception(std::string("Invalid WARC header: '")
+                                  .append(header)
+                                  .append("' at ")
+                                  .append(std::to_string(input.tellg())));
+        } else {
+            // continuation needs previously inserted header
+            if(headers.find(lastKey) == headers.end()) {
+                throw WARC::Exception(std::string("Invalid WARC header: '")
+                                      .append(header)
+                                      .append("' at ")
+                                      .append(std::to_string(input.tellg())));
+            }
+            headers[lastKey].append(header.substr(beginKey));
+        }
+    }
+}
