@@ -6,7 +6,7 @@ TEST_BIN = test-meta-extractor
 CXX               = g++
 override GFLAGS  +=
 override CFLAGS  += -c -Wall -Wextra -Werror -pedantic --std=c++11 -O2 -Iinclude $(GFLAGS)
-override LFLAGS  += -static $(GFLAGS)
+override LFLAGS  += $(GFLAGS)
 
 # directories
 SOURCE  = src/
