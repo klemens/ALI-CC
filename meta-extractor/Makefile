@@ -28,7 +28,7 @@ TESTS_DEP = $(OBJTEST_FILES:%.o=%.d)
 $(BIN): $(OBJ_FILES)
 	$(CXX) -o $@ $(LFLAGS) $^
 
-$(TEST_BIN): $(OBJTEST_FILES)
+$(TEST_BIN): $(OBJTEST_FILES) $(filter-out $(OBJ)main.o, $(OBJ_FILES))
 	$(CXX) -o $@ $(LFLAGS) $^
 
 tests: $(TEST_BIN)
