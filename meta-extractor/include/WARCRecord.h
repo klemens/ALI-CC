@@ -22,8 +22,7 @@ namespace WARC {
 
     template<>
     struct Record<void> : RecordBase {};
+    void readContent(std::istream& input, Record<void>& record);
 }
-
-void readContent(std::istream& input, WARC::Record<void>& record);
 
 #endif
