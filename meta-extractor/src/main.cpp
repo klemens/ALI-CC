@@ -19,9 +19,11 @@ int main(int argc, char** argv) {
     WARC::Reader reader(input);
     WARC::Record<void> record;
     size_t count = 0;
+    uint64_t maxLength = 0;
     try {
         while(reader.read(record)) {
             ++count;
+            maxLength = std::max(maxLength, record.length);
             std::cout << record.id << ", " << record.date << ", "
                       << record.type << ", " << record.length << " bytes"
                       << std::endl;
@@ -29,7 +31,8 @@ int main(int argc, char** argv) {
             // reset record
             record = WARC::Record<void>();
         }
-        std::cout << std::endl << count << " records" << std::endl;
+        std::cout << std::endl << count << " records, max "
+                  << maxLength << " bytes" << std::endl;
     } catch(const std::exception& e) {
         std::cerr << "Exception occurred :" << e.what() << std::endl;
         return 10;
