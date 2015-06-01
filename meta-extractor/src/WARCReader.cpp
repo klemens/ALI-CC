@@ -1,5 +1,7 @@
 #include "WARCReader.h"
 
+#include <sstream>
+
 WARC::Reader::Reader(std::istream& input) : input(input) {}
 
 bool WARC::Reader::hasNextRecord() {
@@ -35,7 +37,7 @@ std::string WARC::Reader::readLine(std::istream& input) {
     return line;
 }
 
-void WARC::Reader::parseHeaders(std::istream& input, header_t& headers) {
+void WARC::Reader::parseHeaders(std::istream& input, WARC::RecordBase& record) {
     std::string lastKey;
 
     while(true) {
@@ -66,7 +68,7 @@ void WARC::Reader::parseHeaders(std::istream& input, header_t& headers) {
                 value = header.substr(beginValue);
             }
 
-            headers.insert(std::make_pair(key, value));
+            record.headers.insert(std::make_pair(key, value));
             lastKey = key;
         } else if(beginKey == std::string::npos) {
             throw WARC::Exception(std::string("Invalid WARC header: '")
@@ -75,13 +77,35 @@ void WARC::Reader::parseHeaders(std::istream& input, header_t& headers) {
                                   .append(std::to_string(input.tellg())));
         } else {
             // continuation needs previously inserted header
-            if(headers.find(lastKey) == headers.end()) {
+            if(record.headers.find(lastKey) == record.headers.end()) {
                 throw WARC::Exception(std::string("Invalid WARC header: '")
                                       .append(header)
                                       .append("' at ")
                                       .append(std::to_string(input.tellg())));
             }
-            headers[lastKey].append(header.substr(beginKey));
+            record.headers[lastKey].append(header.substr(beginKey));
         }
+    }
+
+    // copy over the default attributes
+    auto id = record.headers.find("WARC-Record-ID");
+    auto type = record.headers.find("WARC-Type");
+    auto date = record.headers.find("WARC-Date");
+    auto length = record.headers.find("Content-Length");
+    if(id == record.headers.end() || type == record.headers.end() ||
+       date == record.headers.end() || length == record.headers.end()) {
+        throw WARC::Exception(std::string("Invalid WARC record: missing "
+                                          "mandatory headers at ")
+                              .append(std::to_string(input.tellg())));
+    }
+
+    record.id = id->second;
+    record.type = type->second;
+    record.date = date->second;
+
+    std::istringstream ss(length->second);
+    if (!(ss >> record.length)) {
+        throw WARC::Exception(std::string("Invalid WARC Content-Length at ")
+                              .append(std::to_string(input.tellg())));
     }
 }

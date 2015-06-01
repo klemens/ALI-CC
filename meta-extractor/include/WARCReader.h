@@ -22,7 +22,7 @@ namespace WARC {
                 }
 
                 checkLine("WARC/1.0");
-                readHeaders(input, record);
+                parseHeaders(input, record);
                 readContent(input, record);
                 checkLine("");
                 checkLine("");
@@ -31,7 +31,7 @@ namespace WARC {
             }
 
             static std::string readLine(std::istream& input);
-            static void parseHeaders(std::istream& input, header_t& headers);
+            static void parseHeaders(std::istream& input, WARC::RecordBase& record);
 
         private:
             std::istream& input;

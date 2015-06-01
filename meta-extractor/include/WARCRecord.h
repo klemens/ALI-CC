@@ -7,27 +7,23 @@
 namespace WARC {
     typedef std::unordered_map<std::string, std::string> header_t;
 
-    template<typename Content>
-    struct Record {
+    struct RecordBase {
         std::string id;
         std::string type;
         std::string date;
         header_t headers;
         uint64_t length;
+    };
+
+    template<typename Content>
+    struct Record : RecordBase {
         Content content;
     };
 
     template<>
-    struct Record<void> {
-        std::string id;
-        std::string type;
-        std::string date;
-        header_t headers;
-        uint64_t length;
-    };
+    struct Record<void> : RecordBase {};
 }
 
-void readHeaders(std::istream& input, WARC::Record<void>& record);
 void readContent(std::istream& input, WARC::Record<void>& record);
 
 #endif
