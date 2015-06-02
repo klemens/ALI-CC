@@ -1,6 +1,7 @@
 #include "WARCReader.h"
 
 #include <sstream>
+#include "WARCException.h"
 
 WARC::Reader::Reader(std::istream& input) : input(input) {}
 

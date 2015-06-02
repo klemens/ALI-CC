@@ -7,10 +7,6 @@
 #include "WARCRecord.h"
 
 namespace WARC {
-    class Exception : public std::runtime_error {
-        using std::runtime_error::runtime_error;
-    };
-
     class Reader {
         public:
             Reader(std::istream& input);
