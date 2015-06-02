@@ -17,15 +17,24 @@ int main(int argc, char** argv) {
     }
 
     WARC::Reader reader(input);
-    WARC::Record<void> record;
+    WARC::Record<rapidjson::Document> record;
     size_t count = 0;
     uint64_t maxLength = 0;
     try {
         while(reader.read(record)) {
+            // this is not a json record
+            if(!record.valid) {
+                record.clear();
+                continue;
+            }
+
             ++count;
             maxLength = std::max(maxLength, record.length);
             std::cout << record.id << ", " << record.date << ", "
-                      << record.type << ", " << record.length << " bytes"
+                      << record.length << " bytes, ";
+
+            std::cout << record.content["Envelope"]["WARC-Header-Metadata"]
+                                       ["Content-Type"].GetString()
                       << std::endl;
 
             // clear record because it is reused

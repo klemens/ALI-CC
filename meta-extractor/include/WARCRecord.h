@@ -3,6 +3,8 @@
 
 #include <string>
 #include <unordered_map>
+#include <memory>
+#include "rapidjson/document.h"
 
 namespace WARC {
     typedef std::unordered_map<std::string, std::string> header_t;
@@ -32,6 +34,15 @@ namespace WARC {
     template<>
     struct Record<void> : RecordBase {};
     void readContent(std::istream& input, Record<void>& record);
+
+    template<>
+    struct Record<rapidjson::Document> : RecordBase {
+        rapidjson::Document content;
+        std::unique_ptr<char[]> buffer {nullptr};
+        size_t buffer_size {0};
+        void parseJson();
+    };
+    void readContent(std::istream& input, Record<rapidjson::Document>& record);
 }
 
 #endif
