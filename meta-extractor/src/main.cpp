@@ -28,8 +28,8 @@ int main(int argc, char** argv) {
                       << record.type << ", " << record.length << " bytes"
                       << std::endl;
 
-            // reset record
-            record = WARC::Record<void>();
+            // clear record because it is reused
+            record.clear();
         }
         std::cout << std::endl << count << " records, max "
                   << maxLength << " bytes" << std::endl;

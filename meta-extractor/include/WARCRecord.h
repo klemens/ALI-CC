@@ -12,7 +12,16 @@ namespace WARC {
         std::string type;
         std::string date;
         header_t headers;
-        uint64_t length;
+        size_t length {0};
+        bool valid {true};
+        void clear() {
+            id.clear();
+            type.clear();
+            date.clear();
+            headers.clear();
+            length = 0;
+            valid = true;
+        }
     };
 
     template<typename Content>
