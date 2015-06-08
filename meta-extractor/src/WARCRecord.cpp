@@ -20,7 +20,7 @@ void WARC::readContent(std::istream& input, WARC::Record<rapidjson::Document>& r
     // resize buffer if necessary
     if(record.length >= record.buffer_size) {
         // resize buffer to at least 5 MiB
-        size_t new_buffer_size = std::max(record.length + 1, (1ull<<20) * 5);
+        size_t new_buffer_size = std::max<size_t>(record.length + 1, (1ull<<20) * 5);
         record.buffer = std::unique_ptr<char[]>(new char[new_buffer_size]);
         record.buffer_size = new_buffer_size;
     }
