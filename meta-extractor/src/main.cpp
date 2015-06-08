@@ -4,7 +4,7 @@
 #include "WARCRecord.h"
 #include "tclap/CmdLine.h"
 
-void processWARC(std::istream&, std::ostream&);
+void processWARC(std::istream&, std::ostream&, bool);
 
 int main(int argc, char** argv) {
     std::istream* input;
@@ -13,6 +13,7 @@ int main(int argc, char** argv) {
     TCLAP::CmdLine cmd("meta-extractor", ' ', "0.1");
     TCLAP::ValueArg<std::string> inFile("i", "input", "Input file", false, "", "file", cmd);
     TCLAP::ValueArg<std::string> outFile("o", "output", "Output file", false, "", "file", cmd);
+    TCLAP::SwitchArg verbose("v", "verbose", "Verbose Output", cmd, false);
     try {
         cmd.parse(argc, argv);
     } catch(TCLAP::ArgException &e) {
@@ -45,7 +46,7 @@ int main(int argc, char** argv) {
     }
 
     try {
-        processWARC(*input, *output);
+        processWARC(*input, *output, verbose.getValue());
     } catch(const std::exception& e) {
         std::cerr << "Exception occurred: " << e.what() << std::endl;
         return 10;
@@ -54,7 +55,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void processWARC(std::istream& input, std::ostream& output) {
+void processWARC(std::istream& input, std::ostream& output, bool verbose) {
     WARC::Reader reader(input);
     WARC::Record<rapidjson::Document> record;
     size_t count = 0;
@@ -81,5 +82,7 @@ void processWARC(std::istream& input, std::ostream& output) {
         record.clear();
     }
 
-    std::cerr << count << " records, max " << maxLength << " bytes" << std::endl;
+    if(verbose) {
+        std::cerr << count << " records, max " << maxLength << " bytes" << std::endl;
+    }
 }
