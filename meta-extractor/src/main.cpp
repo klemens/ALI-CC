@@ -2,9 +2,11 @@
 #include <fstream>
 #include "WARCReader.h"
 #include "WARCRecord.h"
+#include "CSVWriter.h"
 #include "tclap/CmdLine.h"
 
-void processWARC(std::istream&, std::ostream&, bool);
+void writeCSVHeader(CSV::Writer&);
+void processWARC(std::istream&, CSV::Writer&, bool);
 
 int main(int argc, char** argv) {
     std::istream* input;
@@ -46,7 +48,10 @@ int main(int argc, char** argv) {
     }
 
     try {
-        processWARC(*input, *output, verbose.getValue());
+        CSV::Writer csv(*output);
+
+        writeCSVHeader(csv);
+        processWARC(*input, csv, verbose.getValue());
     } catch(const std::exception& e) {
         std::cerr << "Exception occurred: " << e.what() << std::endl;
         return 10;
@@ -55,7 +60,33 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void processWARC(std::istream& input, std::ostream& output, bool verbose) {
+void writeCSVHeader(CSV::Writer& csv) {
+    csv
+        << "time"               // uint32 : unix timestamp (of crawl)
+        << "protocol"           // bool   : http[s]
+        << "sl-domain"          // string : amazon.co.uk
+        << "tld"                // string : uk
+        << "public suffix"      // string : co.uk
+        << "path depth"         // uint8  : (number of slashes)
+        << "path length"        // uint16 :
+        << "server (all)"       // string : Apache (2.4)
+        // TODO: server (name) only as enum value?
+        << "server (name)"      // string : Apache
+        << "caching"            // ?
+        << "cookies"            // uint16 : number of cookies used
+        << "mime"               // string : mime-type e. g. text/html
+        << "encoding"           // string : e. g. UTF-8
+        // TODO: add rest of fields
+        << "scripts"            // string : string[] - clustering
+        << "styles"             // string : string[] - clustering
+        << "cdn"                // bool   : uses CDNs or not
+        << "links (intern)"     // uint16
+        << "links (extern)";    // uint16
+
+    csv.next();
+}
+
+void processWARC(std::istream& input, CSV::Writer&, bool verbose) {
     WARC::Reader reader(input);
     WARC::Record<rapidjson::Document> record;
     size_t count = 0;
@@ -70,13 +101,20 @@ void processWARC(std::istream& input, std::ostream& output, bool verbose) {
 
         ++count;
         maxLength = std::max(maxLength, record.length);
-        output << record.id << ", " << record.date << ", "
-               << record.length << " bytes, ";
 
-        output << record.content["Envelope"]
-                                ["WARC-Header-Metadata"]
-                                ["Content-Type"].GetString()
-               << std::endl;
+        std::string content_type = record.content["Envelope"]
+                                                 ["WARC-Header-Metadata"]
+                                                 ["Content-Type"].GetString();
+
+        if (content_type == "application/http; msgtype=response") {
+            // TODO: Output data
+        }
+
+        if (verbose) {
+            std::cerr << record.id << ", " << record.date << ", "
+                      << record.length << " bytes, "
+                      << content_type << std::endl;
+        }
 
         // clear record because it is reused
         record.clear();
