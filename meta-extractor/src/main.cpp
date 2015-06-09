@@ -89,8 +89,7 @@ void writeCSVHeader(CSV::Writer& csv) {
 void processWARC(std::istream& input, CSV::Writer&, bool verbose) {
     WARC::Reader reader(input);
     WARC::Record<rapidjson::Document> record;
-    size_t count = 0;
-    uint64_t maxLength = 0;
+    uint32_t countProcessed {0}, countIgnored {0};
 
     while(reader.read(record)) {
         // this is not a json record
@@ -99,15 +98,15 @@ void processWARC(std::istream& input, CSV::Writer&, bool verbose) {
             continue;
         }
 
-        ++count;
-        maxLength = std::max(maxLength, record.length);
-
         std::string content_type = record.content["Envelope"]
                                                  ["WARC-Header-Metadata"]
                                                  ["Content-Type"].GetString();
 
         if (content_type == "application/http; msgtype=response") {
+            ++countProcessed;
             // TODO: Output data
+        } else {
+            ++countIgnored;
         }
 
         if (verbose) {
@@ -121,6 +120,8 @@ void processWARC(std::istream& input, CSV::Writer&, bool verbose) {
     }
 
     if(verbose) {
-        std::cerr << count << " records, max " << maxLength << " bytes" << std::endl;
+        std::cerr << countProcessed << " records processed, "
+                  << countIgnored << " records ignored because of Content-Type"
+                  << std::endl;
     }
 }
