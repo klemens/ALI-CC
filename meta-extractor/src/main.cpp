@@ -6,7 +6,12 @@
 #include "tclap/CmdLine.h"
 
 void writeCSVHeader(CSV::Writer&);
-void processWARC(std::istream&, CSV::Writer&, bool);
+void processWARC(std::istream&, CSV::Writer&, int);
+
+constexpr int noVerbosity = 0;
+constexpr int lowVerbosity = 1;
+constexpr int medVerbosity = 2;
+constexpr int highVerbosity = 3;
 
 int main(int argc, char** argv) {
     std::istream* input;
@@ -15,7 +20,7 @@ int main(int argc, char** argv) {
     TCLAP::CmdLine cmd("meta-extractor", ' ', "0.1");
     TCLAP::ValueArg<std::string> inFile("i", "input", "Input file", false, "", "file", cmd);
     TCLAP::ValueArg<std::string> outFile("o", "output", "Output file", false, "", "file", cmd);
-    TCLAP::SwitchArg verbose("v", "verbose", "Verbose Output", cmd, false);
+    TCLAP::MultiSwitchArg verbosity("v", "verbose", "Verbose Output", cmd, noVerbosity);
     try {
         cmd.parse(argc, argv);
     } catch(TCLAP::ArgException &e) {
@@ -51,7 +56,7 @@ int main(int argc, char** argv) {
         CSV::Writer csv(*output);
 
         writeCSVHeader(csv);
-        processWARC(*input, csv, verbose.getValue());
+        processWARC(*input, csv, verbosity.getValue());
     } catch(const std::exception& e) {
         std::cerr << "Exception occurred: " << e.what() << std::endl;
         return 10;
@@ -86,7 +91,7 @@ void writeCSVHeader(CSV::Writer& csv) {
     csv.next();
 }
 
-void processWARC(std::istream& input, CSV::Writer&, bool verbose) {
+void processWARC(std::istream& input, CSV::Writer&, int verbosity) {
     WARC::Reader reader(input);
     WARC::Record<rapidjson::Document> record;
     uint32_t countProcessed {0}, countIgnored {0};
@@ -109,7 +114,7 @@ void processWARC(std::istream& input, CSV::Writer&, bool verbose) {
             ++countIgnored;
         }
 
-        if (verbose) {
+        if (verbosity >= highVerbosity) {
             std::cerr << record.id << ", " << record.date << ", "
                       << record.length << " bytes, "
                       << content_type << std::endl;
@@ -119,7 +124,7 @@ void processWARC(std::istream& input, CSV::Writer&, bool verbose) {
         record.clear();
     }
 
-    if(verbose) {
+    if(verbosity >= lowVerbosity) {
         std::cerr << countProcessed << " records processed, "
                   << countIgnored << " records ignored because of Content-Type"
                   << std::endl;
