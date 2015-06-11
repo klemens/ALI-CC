@@ -1,10 +1,12 @@
 #include "CSVWriter.h"
 
-CSV::Writer::Writer(std::ostream& output) : output(output) {}
+CSV::Writer::Writer(std::ostream& output) : output(output), separator(',') {}
+
+CSV::Writer::Writer(std::ostream& output, const char separator) : output(output), separator(separator) {}
 
 CSV::Writer CSV::Writer::operator<< (const std::string& data) {
     if (!isFirstValue) {
-        output << CSV_SEP;
+        output << separator;
     } else {
         isFirstValue = false;
     }

@@ -8,12 +8,14 @@
 namespace CSV {
     class Writer {
         public:
-            static const char CSV_SEP = ',';
-
             /**
              * Construct a CSV::Writer that uses ',' as value separator.
              */
             Writer(std::ostream& output);
+            /**
+             * Construct a CSV::Writer that uses the given separator.
+             */
+            Writer(std::ostream& output, const char separator);
 
             /**
              * Write the given value to the csv file
@@ -33,6 +35,7 @@ namespace CSV {
 
         private:
             std::ostream& output;
+            char separator;
             bool isFirstValue;
     };
 }
