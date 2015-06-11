@@ -109,7 +109,53 @@ void processWARC(std::istream& input, CSV::Writer&, int verbosity) {
 
         if (content_type == "application/http; msgtype=response") {
             ++countProcessed;
-            // TODO: Output data
+
+            // TODO: surround with try-catches for missing fields etc.?
+
+            // TODO: id from "Block-Digest", "WARC-Record-ID"??
+
+            std::string date = record.content["Envelope"]
+                                             ["WARC-Header-Metadata"]
+                                             ["WARC-Date"].GetString();
+            if (verbosity >= highVerbosity) {
+                std::cerr << "Date: " << date << std::endl;
+            }
+            // TODO: parse to unix timestamp
+
+            std::string uri = record.content["Envelope"]
+                                            ["WARC-Header-Metadata"]
+                                            ["WARC-Target-URI"].GetString();
+            if (verbosity >= highVerbosity) {
+                std::cerr << "URI: " << uri << std::endl;
+            }
+            // TODO: parse and split into fragments
+
+            std::string ctype = record.content["Envelope"]
+                                              ["Payload-Metadata"]
+                                              ["Actual-Content-Type"].GetString();
+            ctype = ctype.substr(0, ctype.find(";"));
+            if (verbosity >= highVerbosity) {
+                std::cerr << "Content-Type: " << ctype << std::endl;
+            }
+            // TODO: multiple occurances of content type ...
+
+            const rapidjson::Value& headers = record.content["Envelope"]
+                                                            ["Payload-Metadata"]
+                                                            ["HTTP-Response-Metadata"]
+                                                            ["Headers"];
+            for (rapidjson::Value::ConstMemberIterator itr = headers.MemberBegin();
+                 itr != headers.MemberEnd(); ++itr) {
+                std::string header_key = itr->name.GetString();
+                if (header_key == "Server") {
+                    std::string server = headers[header_key.c_str()].GetString();
+                    if (verbosity >= highVerbosity) {
+                        std::cerr << "Server: " << server << std::endl;
+                    } // if
+                    // TODO: parse server / enum list
+                } // if
+            } // for
+            // TODO: other header fields
+
         } else {
             ++countIgnored;
         }
