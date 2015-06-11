@@ -25,6 +25,21 @@ CSV::Writer CSV::Writer::next() {
 }
 
 std::string CSV::Writer::clean(const std::string& str) {
-    // TODO
-    return str;
+    if (str.find(separator) == std::string::npos) {
+        return str;
+    } else {
+        std::string ret(str);
+
+        // Escape possible quotes
+        size_t spos = ret.rfind('"');
+        while (spos != std::string::npos) {
+            ret.insert(spos, 1, '"');
+            spos = ret.rfind('"', std::max<size_t>(0, spos - 1));
+        }
+
+        ret.push_back('"');
+        ret.insert(0, 1, '"');
+
+        return ret;
+    }
 }
