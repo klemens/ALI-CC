@@ -4,6 +4,7 @@
 #include "WARCRecord.h"
 #include "WARCException.h"
 #include "CSVWriter.h"
+#include "ValueParsers.h"
 #include "tclap/CmdLine.h"
 #include "rapidjson/Pointer.h"
 #include "rapidjson/StringBuffer.h"
@@ -71,7 +72,8 @@ int main(int argc, char** argv) {
 
 void writeCSVHeader(CSV::Writer& csv) {
     csv
-        << "time"               // uint32 : unix timestamp (of crawl)
+        << "id"                 // string : 128 bit hex string
+        << "timestamp"          // string : iso 8601 date
         << "protocol"           // bool   : http[s]
         << "sl-domain"          // string : amazon.co.uk
         << "tld"                // string : uk
@@ -95,7 +97,7 @@ void writeCSVHeader(CSV::Writer& csv) {
     csv.next();
 }
 
-void processWARC(std::istream& input, CSV::Writer&, int verbosity) {
+void processWARC(std::istream& input, CSV::Writer& writer, int verbosity) {
     using Pointer = rapidjson::Pointer;
 
     WARC::Reader reader(input);
@@ -103,6 +105,7 @@ void processWARC(std::istream& input, CSV::Writer&, int verbosity) {
     uint32_t countProcessed {0}, countIgnored {0};
 
     const Pointer pContentType("/Envelope/WARC-Header-Metadata/Content-Type");
+    const Pointer pRecordId("/Envelope/WARC-Header-Metadata/WARC-Record-ID");
 
     while(reader.read(record)) {
         // this is not a json record
@@ -120,7 +123,11 @@ void processWARC(std::istream& input, CSV::Writer&, int verbosity) {
 
         if (contentType == "application/http; msgtype=response") {
             ++countProcessed;
-            // TODO: Output data
+
+            writer << Value::parseId(extract(record.content, pRecordId).GetString());
+            writer << record.date;
+
+            writer.next();
         } else {
             ++countIgnored;
         }
