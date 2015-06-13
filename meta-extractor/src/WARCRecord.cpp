@@ -34,6 +34,7 @@ bool WARC::readContent(std::istream& input, WARC::Record<rapidjson::Document>& r
     }
     record.buffer[record.length] = '\0';
 
+    record.content = rapidjson::Document();
     if(record.content.ParseInsitu(record.buffer.get()).HasParseError()) {
         throw WARC::Exception(std::string("Invalid WARC: malformed json (")
                               .append(rapidjson::GetParseError_En(
