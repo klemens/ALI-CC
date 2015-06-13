@@ -104,18 +104,13 @@ void processWARC(std::istream& input, CSV::Writer& writer, int verbosity) {
     WARC::Record<rapidjson::Document> record;
     uint32_t countProcessed {0}, countIgnored {0};
 
-    const Pointer pContentType("/Envelope/WARC-Header-Metadata/Content-Type");
+    const Pointer pType("/Envelope/WARC-Header-Metadata/WARC-Type");
     const Pointer pRecordId("/Envelope/WARC-Header-Metadata/WARC-Record-ID");
 
     while(reader.read(record)) {
-        std::string contentType;
-        if(auto jContentType = pContentType.Get(record.content)) {
-            contentType = jContentType->GetString();
-        } else {
-            throw WARC::Exception("Invalid WAT: missing Content-Type");
-        }
+        std::string contentType = extract(record.content, pType).GetString();
 
-        if (contentType == "application/http; msgtype=response") {
+        if (contentType == "response") {
             ++countProcessed;
 
             writer << Value::parseId(extract(record.content, pRecordId).GetString());
