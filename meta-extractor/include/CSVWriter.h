@@ -36,7 +36,7 @@ namespace CSV {
         private:
             std::ostream& output;
             char separator;
-            bool isFirstValue;
+            bool isFirstValue{true};
     };
 }
 
