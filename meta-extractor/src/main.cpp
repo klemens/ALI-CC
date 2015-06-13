@@ -13,6 +13,8 @@
 void writeCSVHeader(CSV::Writer&);
 void processWARC(std::istream&, CSV::Writer&, int);
 const rapidjson::Value& extract(const rapidjson::Document&, const rapidjson::Pointer&);
+const char* extractString(const rapidjson::Document&, const rapidjson::Pointer&);
+const char* extractString(const rapidjson::Document&, const rapidjson::Pointer&, const char*);
 
 constexpr int noVerbosity = 0;
 constexpr int lowVerbosity = 1;
@@ -109,12 +111,12 @@ void processWARC(std::istream& input, CSV::Writer& writer, int verbosity) {
     const Pointer pRecordId("/Envelope/WARC-Header-Metadata/WARC-Record-ID");
 
     while(reader.read(record)) {
-        std::string contentType = extract(record.content, pType).GetString();
+        std::string contentType = extractString(record.content, pType);
 
         if (contentType == "response") {
             ++countProcessed;
 
-            writer << Value::parseId(extract(record.content, pRecordId).GetString());
+            writer << Value::parseId(extractString(record.content, pRecordId));
             writer << record.date;
 
             Poco::URI url(record.headers.at("WARC-Target-URI"));
@@ -153,5 +155,17 @@ const rapidjson::Value& extract(const rapidjson::Document& doc, const rapidjson:
         pointer.Stringify(pointerString);
         throw WARC::Exception(std::string("Invalid WAT: missing entry ")
                               .append(pointerString.GetString()));
+    }
+}
+
+const char* extractString(const rapidjson::Document& doc, const rapidjson::Pointer& pointer) {
+    return extract(doc, pointer).GetString();
+}
+
+const char* extractString(const rapidjson::Document& doc, const rapidjson::Pointer& pointer, const char* defaultString) {
+    if(auto value = pointer.Get(doc)) {
+        return value->GetString();
+    } else {
+        return defaultString;
     }
 }
