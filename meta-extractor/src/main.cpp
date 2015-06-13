@@ -2,8 +2,10 @@
 #include <fstream>
 #include "WARCReader.h"
 #include "WARCRecord.h"
+#include "WARCException.h"
 #include "CSVWriter.h"
 #include "tclap/CmdLine.h"
+#include "rapidjson/Pointer.h"
 
 void writeCSVHeader(CSV::Writer&);
 void processWARC(std::istream&, CSV::Writer&, int);
@@ -92,9 +94,13 @@ void writeCSVHeader(CSV::Writer& csv) {
 }
 
 void processWARC(std::istream& input, CSV::Writer&, int verbosity) {
+    using Pointer = rapidjson::Pointer;
+
     WARC::Reader reader(input);
     WARC::Record<rapidjson::Document> record;
     uint32_t countProcessed {0}, countIgnored {0};
+
+    const Pointer pContentType("/Envelope/WARC-Header-Metadata/Content-Type");
 
     while(reader.read(record)) {
         // this is not a json record
@@ -103,11 +109,14 @@ void processWARC(std::istream& input, CSV::Writer&, int verbosity) {
             continue;
         }
 
-        std::string content_type = record.content["Envelope"]
-                                                 ["WARC-Header-Metadata"]
-                                                 ["Content-Type"].GetString();
+        std::string contentType;
+        if(auto jContentType = pContentType.Get(record.content)) {
+            contentType = jContentType->GetString();
+        } else {
+            throw WARC::Exception("Invalid WAT: missing Content-Type");
+        }
 
-        if (content_type == "application/http; msgtype=response") {
+        if (contentType == "application/http; msgtype=response") {
             ++countProcessed;
             // TODO: Output data
         } else {
@@ -117,7 +126,7 @@ void processWARC(std::istream& input, CSV::Writer&, int verbosity) {
         if (verbosity >= highVerbosity) {
             std::cerr << record.id << ", " << record.date << ", "
                       << record.length << " bytes, "
-                      << content_type << std::endl;
+                      << contentType << std::endl;
         }
 
         // clear record because it is reused
