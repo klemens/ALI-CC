@@ -6,9 +6,11 @@
 #include "CSVWriter.h"
 #include "tclap/CmdLine.h"
 #include "rapidjson/Pointer.h"
+#include "rapidjson/StringBuffer.h"
 
 void writeCSVHeader(CSV::Writer&);
 void processWARC(std::istream&, CSV::Writer&, int);
+const rapidjson::Value& extract(const rapidjson::Document&, const rapidjson::Pointer&);
 
 constexpr int noVerbosity = 0;
 constexpr int lowVerbosity = 1;
@@ -137,5 +139,17 @@ void processWARC(std::istream& input, CSV::Writer&, int verbosity) {
         std::cerr << countProcessed << " records processed, "
                   << countIgnored << " records ignored because of Content-Type"
                   << std::endl;
+    }
+}
+
+const rapidjson::Value& extract(const rapidjson::Document& doc, const rapidjson::Pointer& pointer) {
+    if(auto value = pointer.Get(doc)) {
+        // Returning a reference is ok, because the object is stored in the doc
+        return *value;
+    } else {
+        rapidjson::StringBuffer pointerString;
+        pointer.Stringify(pointerString);
+        throw WARC::Exception(std::string("Invalid WAT: missing entry ")
+                              .append(pointerString.GetString()));
     }
 }
