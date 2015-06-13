@@ -26,6 +26,11 @@ int main(int, char**) {
 }
 */
 
+std::string& toLowerInPlace(std::string& str) {
+	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+	return str;
+}
+
 namespace Poco {
 
 

@@ -28,11 +28,6 @@ public:
 		: runtime_error(what + " (" + uri + ")") {}
 };
 
-std::string& toLowerInPlace(std::string& str) {
-	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-	return str;
-}
-
 class URI
 	/// A Uniform Resource Identifier, as specified in RFC 3986.
 	/// 
