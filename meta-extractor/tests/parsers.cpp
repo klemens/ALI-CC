@@ -22,4 +22,13 @@ TEST_CASE("Test ValueParsers", "[warc]") {
         // note the g at the beginning
         REQUIRE_THROWS(Value::parseId("<urn:uuid:g4231d72-1d15-411b-b282-3f21b8d0ce2f>"));
     }
+
+    SECTION("Value::parseTld") {
+        REQUIRE(Value::parseTld("domain.test") == "test");
+        REQUIRE(Value::parseTld("so.many.domains.test") == "test");
+        REQUIRE(Value::parseTld(".test") == "test");
+        REQUIRE(Value::parseTld("test.") == "");
+        REQUIRE(Value::parseTld("test") == "");
+        REQUIRE(Value::parseTld("") == "");
+    }
 }

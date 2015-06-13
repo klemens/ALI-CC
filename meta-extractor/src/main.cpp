@@ -5,6 +5,7 @@
 #include "WARCException.h"
 #include "CSVWriter.h"
 #include "ValueParsers.h"
+#include "PocoUri.h"
 #include "tclap/CmdLine.h"
 #include "rapidjson/Pointer.h"
 #include "rapidjson/StringBuffer.h"
@@ -74,12 +75,12 @@ void writeCSVHeader(CSV::Writer& csv) {
     csv
         << "id"                 // string : 128 bit hex string
         << "timestamp"          // string : iso 8601 date
-        << "protocol"           // bool   : http[s]
-        << "sl-domain"          // string : amazon.co.uk
+        << "https"              // bool   : http[s]
+        << "hostname"           // string : amazon.co.uk
         << "tld"                // string : uk
         << "public suffix"      // string : co.uk
-        << "path depth"         // uint8  : (number of slashes)
-        << "path length"        // uint16 :
+        << "path depth"         // uint8  : number of slashes in path + 1
+        << "pathsegment length" // uint16 : length of path + query + fragment
         << "server (all)"       // string : Apache (2.4)
         // TODO: server (name) only as enum value?
         << "server (name)"      // string : Apache
@@ -115,6 +116,14 @@ void processWARC(std::istream& input, CSV::Writer& writer, int verbosity) {
 
             writer << Value::parseId(extract(record.content, pRecordId).GetString());
             writer << record.date;
+
+            Poco::URI url(record.headers.at("WARC-Target-URI"));
+            writer << std::to_string(url.getScheme() == "https")
+                   << url.getHost()
+                   << Value::extractTld(url.getHost())
+                   << "" // TODO: implement public suffix
+                   << std::to_string(Value::extractPathDepth(url.getPath()))
+                   << std::to_string((uint16_t) url.getPathEtc().size());
 
             writer.next();
         } else {

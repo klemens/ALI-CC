@@ -29,3 +29,16 @@ std::string Value::parseId(std::string uri) {
 
     return uri;
 }
+
+std::string Value::extractTld(const std::string& hostname) {
+    auto pos = hostname.find_last_of('.');
+    if(pos == std::string::npos) {
+        return "";
+    } else {
+        return hostname.substr(pos + 1);
+    }
+}
+
+uint8_t Value::extractPathDepth(const std::string& path) {
+    return std::count(path.begin(), path.end(), '/');
+}
