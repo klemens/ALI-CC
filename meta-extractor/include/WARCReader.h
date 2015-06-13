@@ -13,15 +13,20 @@ namespace WARC {
 
             template<typename Content>
             bool read(Record<Content>& record) {
-                if(!hasNextRecord()) {
-                    return false;
-                }
+                bool success;
+                do {
+                    record.clear();
 
-                checkLine("WARC/1.0");
-                parseHeaders(input, record);
-                readContent(input, record);
-                checkLine("");
-                checkLine("");
+                    if(!hasNextRecord()) {
+                        return false;
+                    }
+
+                    checkLine("WARC/1.0");
+                    parseHeaders(input, record);
+                    success = readContent(input, record);
+                    checkLine("");
+                    checkLine("");
+                } while(!success);
 
                 return true;
             }

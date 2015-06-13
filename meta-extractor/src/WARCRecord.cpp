@@ -4,17 +4,18 @@
 #include "WARCException.h"
 #include "rapidjson/error/en.h"
 
-void WARC::readContent(std::istream& input, WARC::Record<void>& record) {
+bool WARC::readContent(std::istream& input, WARC::Record<void>& record) {
     input.ignore(record.length);
+
+    return true;
 }
 
-void WARC::readContent(std::istream& input, WARC::Record<rapidjson::Document>& record) {
+bool WARC::readContent(std::istream& input, WARC::Record<rapidjson::Document>& record) {
     // only read and parse actual json
     if(record.headers.find("Content-Type") == record.headers.end() ||
        record.headers["Content-Type"] != "application/json") {
         input.ignore(record.length);
-        record.valid = false;
-        return;
+        return false;
     }
 
     // resize buffer if necessary
@@ -40,4 +41,6 @@ void WARC::readContent(std::istream& input, WARC::Record<rapidjson::Document>& r
                               .append(") at ")
                               .append(std::to_string(input.tellg())));
     }
+
+    return true;
 }

@@ -15,14 +15,12 @@ namespace WARC {
         std::string date;
         header_t headers;
         size_t length {0};
-        bool valid {true};
         void clear() {
             id.clear();
             type.clear();
             date.clear();
             headers.clear();
             length = 0;
-            valid = true;
         }
     };
 
@@ -33,7 +31,7 @@ namespace WARC {
 
     template<>
     struct Record<void> : RecordBase {};
-    void readContent(std::istream& input, Record<void>& record);
+    bool readContent(std::istream& input, Record<void>& record);
 
     template<>
     struct Record<rapidjson::Document> : RecordBase {
@@ -42,7 +40,7 @@ namespace WARC {
         size_t buffer_size {0};
         void parseJson();
     };
-    void readContent(std::istream& input, Record<rapidjson::Document>& record);
+    bool readContent(std::istream& input, Record<rapidjson::Document>& record);
 }
 
 #endif

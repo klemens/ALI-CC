@@ -108,12 +108,6 @@ void processWARC(std::istream& input, CSV::Writer& writer, int verbosity) {
     const Pointer pRecordId("/Envelope/WARC-Header-Metadata/WARC-Record-ID");
 
     while(reader.read(record)) {
-        // this is not a json record
-        if(!record.valid) {
-            record.clear();
-            continue;
-        }
-
         std::string contentType;
         if(auto jContentType = pContentType.Get(record.content)) {
             contentType = jContentType->GetString();
@@ -137,9 +131,6 @@ void processWARC(std::istream& input, CSV::Writer& writer, int verbosity) {
                       << record.length << " bytes, "
                       << contentType << std::endl;
         }
-
-        // clear record because it is reused
-        record.clear();
     }
 
     if(verbosity >= lowVerbosity) {
