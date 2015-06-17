@@ -7,8 +7,8 @@
 #include "ValueParsers.h"
 #include "PocoUri.h"
 #include "tclap/CmdLine.h"
-#include "rapidjson/Pointer.h"
-#include "rapidjson/StringBuffer.h"
+#include "rapidjson/pointer.h"
+#include "rapidjson/stringbuffer.h"
 
 void writeCSVHeader(CSV::Writer&);
 void processWARC(std::istream&, CSV::Writer&, int);
