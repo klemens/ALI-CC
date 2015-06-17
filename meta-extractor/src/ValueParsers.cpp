@@ -1,6 +1,8 @@
 #include "ValueParsers.h"
 
 #include <algorithm>
+#include <vector>
+#include <locale>
 #include "WARCException.h"
 
 std::string Value::parseId(std::string uri) {
@@ -41,4 +43,41 @@ std::string Value::extractTld(const std::string& hostname) {
 
 uint8_t Value::extractPathDepth(const std::string& path) {
     return std::count(path.begin(), path.end(), '/');
+}
+
+std::string Value::canonicalizeServer(const std::string& server) {
+    static const auto locale = std::locale::classic();
+    static const std::vector<std::string> canonServers = {
+        "apache-coyote",
+        "apache",
+        "nginx",
+        "iis",
+        "ats",
+        "gws",
+        "gse",
+        "litespeed",
+        "lighttpd",
+        "hiawatha",
+        "cherokee",
+        "tornado",
+        "jetty"
+    };
+
+    if(server.size() == 0) {
+        return "";
+    }
+
+    for(const auto& canonServer : canonServers) {
+        auto result = std::search(server.begin(), server.end(),
+                                  canonServer.begin(), canonServer.end(),
+                                  [](const char& a, const char& b) {
+                                      return std::tolower(a, locale) == b;
+                                  });
+
+        if(result != server.end()) {
+            return canonServer;
+        }
+    }
+
+    return "other";
 }

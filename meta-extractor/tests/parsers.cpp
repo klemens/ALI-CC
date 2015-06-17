@@ -31,4 +31,18 @@ TEST_CASE("Test ValueParsers", "[warc]") {
         REQUIRE(Value::extractTld("test") == "");
         REQUIRE(Value::extractTld("") == "");
     }
+
+    SECTION("Value::canonicalizeServer") {
+        REQUIRE(Value::canonicalizeServer("") == "");
+        REQUIRE(Value::canonicalizeServer("webserver") == "other");
+        REQUIRE(Value::canonicalizeServer("Nginx/1.5.6 (Ubuntu)") == "nginx");
+        REQUIRE(Value::canonicalizeServer("cloudflare-nginx") == "nginx");
+        REQUIRE(Value::canonicalizeServer("Microsoft-IIS/8.5") == "iis");
+        REQUIRE(Value::canonicalizeServer("lighttpd/2.0.0") == "lighttpd");
+        REQUIRE(Value::canonicalizeServer("Jetty(8.1.13.v20130916)") == "jetty");
+        REQUIRE(Value::canonicalizeServer("GSE") == "gse");
+        REQUIRE(Value::canonicalizeServer("Apache/2.2.27 (Unix) PHP/5.3.5") == "apache");
+        REQUIRE(Value::canonicalizeServer("Apache-Coyote/1.1") == "apache-coyote");
+        REQUIRE(Value::canonicalizeServer("hiawatha 9.0") == "hiawatha");
+    }
 }

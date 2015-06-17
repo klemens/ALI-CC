@@ -24,6 +24,15 @@ namespace Value {
      *     -> uk
      */
     uint8_t extractPathDepth(const std::string& path);
+
+    /**
+     * Canonicalize the HTTP Server header to the most used servers and remove
+     * version information. Returns "other" for other servers and an empty
+     * string if given an empty string
+     * eg: Nginx/1.9.2 -> nginx
+     * eg: My cool server -> *empty string*
+     */
+    std::string canonicalizeServer(const std::string& server);
 }
 
 #endif
