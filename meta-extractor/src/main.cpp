@@ -26,8 +26,8 @@ int main(int argc, char** argv) {
     std::ostream* output;
 
     TCLAP::CmdLine cmd("meta-extractor", ' ', "0.1");
-    TCLAP::ValueArg<std::string> inFile("i", "input", "Input file", false, "", "file", cmd);
-    TCLAP::ValueArg<std::string> outFile("o", "output", "Output file", false, "", "file", cmd);
+    TCLAP::ValueArg<std::string> inFile("i", "input", "Input file", false, "", "in-file", cmd);
+    TCLAP::ValueArg<std::string> outFile("o", "output", "Output file", false, "", "out-file", cmd);
     TCLAP::MultiSwitchArg verbosity("v", "verbose", "Verbose Output", cmd, noVerbosity);
     try {
         cmd.parse(argc, argv);
