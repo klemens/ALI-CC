@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
     TCLAP::CmdLine cmd("meta-extractor", ' ', "0.1");
     TCLAP::ValueArg<std::string> inFile("i", "input", "Input file", false, "", "in-file", cmd);
     TCLAP::ValueArg<std::string> outFile("o", "output", "Output file", false, "", "out-file", cmd);
-    TCLAP::ValueArg<std::string> suffixFile("s", "public-suffixes", "Public suffix list file", true, "", "suffix-file", cmd);
+    TCLAP::ValueArg<std::string> suffixFile("s", "public-suffixes", "Public suffix list file: https://publicsuffix.org/list/", true, "", "suffix-file", cmd);
     TCLAP::MultiSwitchArg verbosity("v", "verbose", "Verbose Output", cmd, noVerbosity);
     try {
         cmd.parse(argc, argv);
