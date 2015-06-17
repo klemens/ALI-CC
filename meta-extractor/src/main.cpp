@@ -5,13 +5,14 @@
 #include "WARCException.h"
 #include "CSVWriter.h"
 #include "ValueParsers.h"
+#include "PublicSuffix.h"
 #include "PocoUri.h"
 #include "tclap/CmdLine.h"
 #include "rapidjson/pointer.h"
 #include "rapidjson/stringbuffer.h"
 
 void writeCSVHeader(CSV::Writer&);
-void processWARC(std::istream&, CSV::Writer&, int);
+void processWARC(std::istream&, CSV::Writer&, const PublicSuffix&, int);
 const rapidjson::Value& extract(const rapidjson::Document&, const rapidjson::Pointer&);
 const char* extractString(const rapidjson::Document&, const rapidjson::Pointer&);
 const char* extractString(const rapidjson::Document&, const rapidjson::Pointer&, const char*);
@@ -28,6 +29,7 @@ int main(int argc, char** argv) {
     TCLAP::CmdLine cmd("meta-extractor", ' ', "0.1");
     TCLAP::ValueArg<std::string> inFile("i", "input", "Input file", false, "", "in-file", cmd);
     TCLAP::ValueArg<std::string> outFile("o", "output", "Output file", false, "", "out-file", cmd);
+    TCLAP::ValueArg<std::string> suffixFile("s", "public-suffixes", "Public suffix list file", true, "", "suffix-file", cmd);
     TCLAP::MultiSwitchArg verbosity("v", "verbose", "Verbose Output", cmd, noVerbosity);
     try {
         cmd.parse(argc, argv);
@@ -60,11 +62,18 @@ int main(int argc, char** argv) {
         output = &std::cout;
     }
 
+    std::ifstream suffixFileStream(suffixFile.getValue());
+    if(!suffixFileStream.good()) {
+        std::cerr << "public suffix list file not found" << std::endl;
+        return 4;
+    }
+    PublicSuffix suffixes(suffixFileStream);
+
     try {
         CSV::Writer csv(*output);
 
         writeCSVHeader(csv);
-        processWARC(*input, csv, verbosity.getValue());
+        processWARC(*input, csv, suffixes, verbosity.getValue());
     } catch(const std::exception& e) {
         std::cerr << "Exception occurred: " << e.what() << std::endl;
         return 10;
@@ -100,7 +109,7 @@ void writeCSVHeader(CSV::Writer& csv) {
     csv.next();
 }
 
-void processWARC(std::istream& input, CSV::Writer& writer, int verbosity) {
+void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& suffixes, int verbosity) {
     using Pointer = rapidjson::Pointer;
 
     WARC::Reader reader(input);
@@ -123,7 +132,7 @@ void processWARC(std::istream& input, CSV::Writer& writer, int verbosity) {
             writer << std::to_string(url.getScheme() == "https")
                    << url.getHost()
                    << Value::extractTld(url.getHost())
-                   << "" // TODO: implement public suffix
+                   << suffixes.getSuffix(url.getHost())
                    << std::to_string(Value::extractPathDepth(url.getPath()))
                    << std::to_string((uint16_t) url.getPathEtc().size());
 
