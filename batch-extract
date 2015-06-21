@@ -1,0 +1,76 @@
+#!/usr/bin/bash
+
+# pipe has return code of last failing command (not standard sh)
+set -o pipefail
+
+if [ $# -ne 4 ]; then
+    echo "usage: ./batch-extract base_uri.file crawl_uris.file suffixes.file remove_server.ssh"
+    exit 1
+fi
+
+if [ ! -f "$1" ]; then
+    echo "base_uri.file ($1) not found"
+    exit 2
+fi
+baseUrl=$(cat "$1")
+
+if [ ! -f "$2" ]; then
+    echo "crawl_uris.file ($2) not found"
+    exit 3
+fi
+filename=$2
+
+if [ ! -f "$3" ]; then
+    echo "suffixes.file ($3) not found"
+    exit 4
+fi
+suffixes=$3
+
+# BatchMode only works on openssh
+if ! ssh -oBatchMode=yes $4 exit ; then
+    echo "could not connect to remote server"
+    exit 5
+fi
+sshArguments="-oBatchmode=yes $4"
+
+while true; do
+    # read first line
+    url=$(head -n 1 $filename)
+
+    if [ -z "$url" ]; then
+        break
+    fi
+
+    remoteFile=result/$(basename -s .warc.wat.gz "$url").csv.gz
+    remoteFileTmp=${remoteFile}.tmp
+
+    echo "processing $remoteFileTmp"
+    echo $(date -u -Is) $baseUrl$url $remoteFileTmp >> batch-extract.log
+
+    # execute extraction
+    curl "$baseUrl$url" \
+         | gzip -d \
+         | ./meta-extractor/meta-extractor -s "$suffixes" \
+         | gzip -c \
+         | ssh $sshArguments "cat - > $remoteFileTmp"
+    if [ $? -ne 0 ]; then
+        echo "error while processing, aborting"
+        exit 10
+    fi
+
+    # mark file as complete
+    ssh $sshArguments "mv $remoteFileTmp $remoteFile"
+    if [ $? -ne 0 ]; then
+        echo "error while marking as ready, aborting"
+        exit 10
+    fi
+
+    echo "marked as ready"
+    echo $(date -u -Is) "marked as ready" >> batch-extract.log
+
+    # remove first line (not very efficient, use small files!)
+    trap "" SIGINT # execute atomically (ignore Ctrl-C)
+        tail -n +2 $filename > ${filename}_tmp
+        mv ${filename}_tmp $filename
+    trap - SIGINT
+done
