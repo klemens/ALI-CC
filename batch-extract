@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # pipe has return code of last failing command (not standard sh)
 set -o pipefail
@@ -41,7 +41,8 @@ while true; do
         break
     fi
 
-    remoteFile=result/$(basename -s .warc.wat.gz "$url").csv.gz
+    remoteFileBase=$(basename "$url")
+    remoteFile=result/${remoteFileBase%.warc.wat.gz}.csv.gz
     remoteFileTmp=${remoteFile}.tmp
 
     echo "processing $remoteFileTmp"

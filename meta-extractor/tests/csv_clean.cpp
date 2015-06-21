@@ -5,7 +5,7 @@
 
 class CSVWriterTest : public CSV::Writer {
     public:
-        using CSV::Writer::Writer;
+        CSVWriterTest(std::ostream& output, const char separator) : CSV::Writer(output, separator) {}
 
         std::string clean(const std::string& data) {
             return CSV::Writer::clean(data);
