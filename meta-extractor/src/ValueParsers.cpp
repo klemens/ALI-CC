@@ -88,3 +88,11 @@ bool Value::isIPv6(const std::string& ip) {
     }
     return ip.find('.') == std::string::npos;
 }
+
+bool Value::usesCompression(const std::string& contentEncoding) {
+    if(contentEncoding.empty()) {
+        return false;
+    }
+    return contentEncoding.find("gzip") != std::string::npos ||
+           contentEncoding.find("deflate") != std::string::npos;
+}

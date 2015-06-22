@@ -93,6 +93,7 @@ void writeCSVHeader(CSV::Writer& csv) {
         << "path depth"         // uint8  : number of slashes in path + 1
         << "pathsegment length" // uint16 : length of path + query + fragment
         << "server"             // string : apache
+        << "compression"        // bool   : yes/no
         << "caching"            // ?
         << "cookies"            // uint16 : number of cookies used
         << "mime"               // string : mime-type e. g. text/html
@@ -117,6 +118,7 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
     const Pointer pType("/Envelope/WARC-Header-Metadata/WARC-Type");
     const Pointer pRecordId("/Envelope/WARC-Header-Metadata/WARC-Record-ID");
     const Pointer pServer("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Server");
+    const Pointer pContentEncoding("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Content-Encoding");
 
     while(reader.read(record)) {
         std::string contentType = extractString(record.content, pType);
@@ -136,6 +138,9 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
                    << std::to_string((uint16_t) url.getPathEtc().size());
 
             writer << Value::canonicalizeServer(extractString(record.content, pServer, ""));
+
+            writer << std::to_string(Value::usesCompression(
+                          extractString(record.content, pContentEncoding, "")));
 
             writer.next();
         } else {

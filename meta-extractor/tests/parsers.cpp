@@ -54,4 +54,11 @@ TEST_CASE("Test ValueParsers", "[warc]") {
         REQUIRE(Value::isIPv6("2001:a34::80") == true);
         REQUIRE(Value::isIPv6("[2001:a34::80]:80") == true);
     }
+
+    SECTION("Value::usesCompression") {
+        REQUIRE(Value::usesCompression("") == false);
+        REQUIRE(Value::usesCompression("gzip") == true);
+        REQUIRE(Value::usesCompression("deflate") == true);
+        REQUIRE(Value::usesCompression("identity") == false);
+    }
 }

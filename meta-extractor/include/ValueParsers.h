@@ -42,6 +42,12 @@ namespace Value {
      * eg: 2001:a30::11 -> true
      */
     bool isIPv6(const std::string& ip);
+
+    /**
+     * Determine if the request uses any kind of compression
+     * Content-Encoding: deflate -> true
+     */
+    bool usesCompression(const std::string& contentEncoding);
 }
 
 #endif
