@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <cstring>
 #include "WARCReader.h"
 #include "WARCRecord.h"
 #include "WARCException.h"
@@ -10,6 +11,7 @@
 #include "tclap/CmdLine.h"
 #include "rapidjson/pointer.h"
 #include "rapidjson/stringbuffer.h"
+#include "rapidjson/range-based-for.h"
 
 void writeCSVHeader(CSV::Writer&);
 void processWARC(std::istream&, CSV::Writer&, const PublicSuffix&, int);
@@ -121,6 +123,9 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
     const Pointer pContentEncoding("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Content-Encoding");
     const Pointer pCookies("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Set-Cookie");
     const Pointer pContentType("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Content-Type");
+    const Pointer pScripts("/Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Head/Scripts");
+    const Pointer pStyles("/Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Head/Link");
+    const Pointer pLinks("/Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Links");
 
     while(reader.read(record)) {
         std::string contentType = extractString(record.content, pType);
@@ -147,6 +152,47 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
             writer << std::to_string(pCookies.Get(record.content) != nullptr);
 
             writer << Value::extractMIME(extractString(record.content, pContentType, ""));
+
+            bool usesCDN = false;
+            const std::string testScriptType{"SCRIPT@/src"},
+                              testStyleRel{"stylesheet"},
+                              testLinkType{"STYLE/#text"};
+            if(auto scripts = pScripts.Get(record.content)) {
+                for(const auto& script : *scripts) {
+                    if(script.HasMember("path") && script.HasMember("url") &&
+                       testScriptType == script["path"].GetString()) {
+                        if(Value::checkCDN(script["url"].GetString())) {
+                            usesCDN = true;
+                            goto cdn_found;
+                        }
+                    }
+                }
+            }
+            if(auto styles = pStyles.Get(record.content)) {
+                for(const auto& style : *styles) {
+                    if(style.HasMember("rel") && style.HasMember("url") &&
+                       testStyleRel == style["rel"].GetString()) {
+                        if(Value::checkCDN(style["url"].GetString())) {
+                            usesCDN = true;
+                            goto cdn_found;
+                        }
+                    }
+                }
+            }
+            if(auto links = pLinks.Get(record.content)) {
+                for(const auto& link : *links) {
+                    if(link.HasMember("path") && link.HasMember("href") &&
+                       testLinkType == link["path"].GetString() &&
+                       std::strstr(link["href"].GetString(), ".css") != nullptr) {
+                        if(Value::checkCDN(link["href"].GetString())) {
+                            usesCDN = true;
+                            goto cdn_found;
+                        }
+                    }
+                }
+            }
+            cdn_found:
+            writer << std::to_string(usesCDN);
 
             writer.next();
         } else {

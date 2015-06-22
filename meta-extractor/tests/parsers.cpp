@@ -70,4 +70,17 @@ TEST_CASE("Test ValueParsers", "[warc]") {
         REQUIRE(Value::usesCompression("deflate") == true);
         REQUIRE(Value::usesCompression("identity") == false);
     }
+
+    SECTION("Value::prefix") {
+        REQUIRE(Value::prefix("", "") == true);
+        REQUIRE(Value::prefix("abc", "") == true);
+        REQUIRE(Value::prefix("abc", "a") == true);
+        REQUIRE(Value::prefix("abc", "ab") == true);
+        REQUIRE(Value::prefix("abc", "abc") == true);
+        REQUIRE(Value::prefix("bcd", "a") == false);
+        REQUIRE(Value::prefix("bcd", "ab") == false);
+        REQUIRE(Value::prefix("bcd", "abc") == false);
+        REQUIRE(Value::prefix("bcd", "abcd") == false);
+        REQUIRE(Value::prefix("", "a") == false);
+    }
 }

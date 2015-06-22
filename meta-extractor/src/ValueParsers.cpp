@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <locale>
+#include <cstring>
 #include "WARCException.h"
 
 std::string Value::parseId(std::string uri) {
@@ -104,4 +105,46 @@ bool Value::usesCompression(const std::string& contentEncoding) {
     }
     return contentEncoding.find("gzip") != std::string::npos ||
            contentEncoding.find("deflate") != std::string::npos;
+}
+
+bool Value::prefix(const char* string, const char* prefix) {
+    while(*prefix) {
+        if(*prefix++ != *string++) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Value::checkCDN(const char* url) {
+    static const char* cdns[] = {
+        "ajax.googleapis.com",
+        "cloudfront.net",
+        "code.jquery.com",
+        "typekit.net",          // font hosting by Adobe
+        "amazonaws.com",
+        "cloudflare.com",
+        "maxcdn",               // eg maxcdn.bootstrapcdn.com
+        "ajax.aspnetcdn.com",
+        "edgecastcdn.net",
+        "akamaihd.net",
+        "cdn.jsdelivr.net",
+        "fastly.net",
+    };
+
+    if(url == nullptr) {
+        return false;
+    }
+
+    if(!Value::prefix(url, "http") && !Value::prefix(url, "//")) {
+        return false;
+    }
+
+    for(const auto& cdn : cdns) {
+        if(std::strstr(url, cdn) != nullptr) {
+            return true;
+        }
+    }
+
+    return false;
 }

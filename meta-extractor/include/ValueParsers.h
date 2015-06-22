@@ -55,6 +55,16 @@ namespace Value {
      * Content-Encoding: deflate -> true
      */
     bool usesCompression(const std::string& contentEncoding);
+
+    /**
+     * Checks whether the URL contains a known CDN.
+     */
+    bool checkCDN(const char* url);
+
+    /**
+     * Check if string starts with the given prefix
+     */
+    bool prefix(const char* string, const char* prefix);
 }
 
 #endif
