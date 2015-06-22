@@ -18,6 +18,7 @@ void processWARC(std::istream&, CSV::Writer&, const PublicSuffix&, int);
 const rapidjson::Value& extract(const rapidjson::Document&, const rapidjson::Pointer&);
 const char* extractString(const rapidjson::Document&, const rapidjson::Pointer&);
 const char* extractString(const rapidjson::Document&, const rapidjson::Pointer&, const char*);
+bool prefix(const char * string, const char * prefix);
 
 constexpr int noVerbosity = 0;
 constexpr int lowVerbosity = 1;
@@ -194,6 +195,48 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
             cdn_found:
             writer << std::to_string(usesCDN);
 
+            const std::string ahref("A@/href");
+            uint16_t countLinksInner {0}, countLinksOuter {0}, countLinksRelative {0};
+            if(auto links = pLinks.Get(record.content)) {
+                for(auto linkIter = links->Begin(); linkIter != links->End(); ++linkIter) {
+                    const rapidjson::Value& link = *linkIter;
+                    if(link.HasMember("path") && link.HasMember("url") &&
+                       ahref == link["path"].GetString()) {
+                        const char* linkurl = link["url"].GetString();
+                        if(linkurl == nullptr || *linkurl == '\0' ||
+                           prefix(linkurl, "javascript:") ||
+                           prefix(linkurl, "mailto:") ||
+                           prefix(linkurl, "<%")) {
+                            continue;
+                        }
+
+                        // trim whitespace at the beginning
+                        while(*linkurl == ' ' || *linkurl == '\t') {
+                            ++linkurl;
+                        }
+
+                        if(!prefix(linkurl, "http") && !prefix(linkurl, "//")) {
+                            ++countLinksRelative;
+                        } else {
+                            try {
+                                Poco::URI href(linkurl);
+                                if (href.isRelative()) {
+                                    ++countLinksRelative;
+                                } else if (href.getHost() == url.getHost()) {
+                                    ++countLinksInner;
+                                } else {
+                                    ++countLinksOuter;
+                                }
+                            } catch(const Poco::SyntaxException& e) {
+                                // ignore invalid uris
+                            }
+                        }
+                    }
+                }
+            }
+            writer << std::to_string(countLinksInner + countLinksRelative);
+            writer << std::to_string(countLinksOuter);
+
             writer.next();
         } else {
             ++countIgnored;
@@ -235,4 +278,13 @@ const char* extractString(const rapidjson::Document& doc, const rapidjson::Point
     } else {
         return defaultString;
     }
+}
+
+bool prefix(const char * string, const char * prefix) {
+    while(*prefix) {
+        if(*prefix++ != *string++) {
+            return false;
+        }
+    }
+    return true;
 }
