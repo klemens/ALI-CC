@@ -95,7 +95,7 @@ void writeCSVHeader(CSV::Writer& csv) {
         << "server"             // string : apache
         << "compression"        // bool   : yes/no
         << "caching"            // ?
-        << "cookies"            // uint16 : number of cookies used
+        << "cookies"            // bool   : yes/no
         << "mime"               // string : mime-type e. g. text/html
         << "encoding"           // string : e. g. UTF-8
         // TODO: add rest of fields
@@ -119,6 +119,7 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
     const Pointer pRecordId("/Envelope/WARC-Header-Metadata/WARC-Record-ID");
     const Pointer pServer("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Server");
     const Pointer pContentEncoding("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Content-Encoding");
+    const Pointer pCookies("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Set-Cookie");
 
     while(reader.read(record)) {
         std::string contentType = extractString(record.content, pType);
@@ -141,6 +142,8 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
 
             writer << std::to_string(Value::usesCompression(
                           extractString(record.content, pContentEncoding, "")));
+
+            writer << std::to_string(pCookies.Get(record.content) != nullptr);
 
             writer.next();
         } else {
