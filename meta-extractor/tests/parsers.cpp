@@ -45,4 +45,13 @@ TEST_CASE("Test ValueParsers", "[warc]") {
         REQUIRE(Value::canonicalizeServer("Apache-Coyote/1.1") == "apache-coyote");
         REQUIRE(Value::canonicalizeServer("hiawatha 9.0") == "hiawatha");
     }
+
+    SECTION("Value::isIPv6") {
+        REQUIRE(Value::isIPv6("") == false);
+        REQUIRE(Value::isIPv6("127.0.0.1") == false);
+        REQUIRE(Value::isIPv6("127.0.0.1:80") == false);
+        REQUIRE(Value::isIPv6("::1") == true);
+        REQUIRE(Value::isIPv6("2001:a34::80") == true);
+        REQUIRE(Value::isIPv6("[2001:a34::80]:80") == true);
+    }
 }

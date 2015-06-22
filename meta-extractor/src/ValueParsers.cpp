@@ -81,3 +81,10 @@ std::string Value::canonicalizeServer(const std::string& server) {
 
     return "other";
 }
+
+bool Value::isIPv6(const std::string& ip) {
+    if(ip.empty()) {
+        return false;
+    }
+    return ip.find('.') == std::string::npos;
+}

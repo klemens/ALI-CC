@@ -33,6 +33,15 @@ namespace Value {
      * eg: My cool server -> *empty string*
      */
     std::string canonicalizeServer(const std::string& server);
+
+    /**
+     * Check if the given ip looks like ipv6
+     * Note: does not perform a syntax check!
+     * eg: 10.0.23.19 -> false
+     * eg: 82.44.120.203:8080 -> false
+     * eg: 2001:a30::11 -> true
+     */
+    bool isIPv6(const std::string& ip);
 }
 
 #endif
