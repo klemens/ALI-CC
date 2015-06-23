@@ -30,6 +30,7 @@ int main(int argc, char** argv) {
     TCLAP::ValueArg<std::string> inFile("i", "input", "Input file", false, "", "in-file", cmd);
     TCLAP::ValueArg<std::string> outFile("o", "output", "Output file", false, "", "out-file", cmd);
     TCLAP::ValueArg<std::string> suffixFile("s", "public-suffixes", "Public suffix list file: https://publicsuffix.org/list/", true, "", "suffix-file", cmd);
+    TCLAP::SwitchArg csvHeader("", "print-header", "Output includes csv header", cmd, false);
     TCLAP::MultiSwitchArg verbosity("v", "verbose", "Verbose Output", cmd, noVerbosity);
     try {
         cmd.parse(argc, argv);
@@ -72,7 +73,9 @@ int main(int argc, char** argv) {
     try {
         CSV::Writer csv(*output);
 
-        writeCSVHeader(csv);
+        if(csvHeader.getValue()) {
+            writeCSVHeader(csv);
+        }
         processWARC(*input, csv, suffixes, verbosity.getValue());
     } catch(const std::exception& e) {
         std::cerr << "Exception occurred: " << e.what() << std::endl;
