@@ -94,11 +94,7 @@ void writeCSVHeader(CSV::Writer& csv) {
         << "pathsegment length" // uint16 : length of path + query + fragment
         << "server"             // string : apache
         << "compression"        // bool   : yes/no
-        << "caching"            // ?
         << "cookies"            // bool   : yes/no
-        << "mime"               // string : mime-type e. g. text/html
-        << "encoding"           // string : e. g. UTF-8
-        // TODO: add rest of fields
         << "scripts"            // string : string[] - clustering
         << "styles"             // string : string[] - clustering
         << "cdn"                // bool   : uses CDNs or not
