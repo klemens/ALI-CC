@@ -98,6 +98,7 @@ void writeCSVHeader(CSV::Writer& csv) {
         << "server"             // string : apache
         << "compression"        // bool   : yes/no
         << "cookies"            // bool   : yes/no
+        << "mime"               // string : text/html
         << "scripts"            // string : string[] - clustering
         << "styles"             // string : string[] - clustering
         << "cdn"                // bool   : uses CDNs or not
@@ -119,6 +120,7 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
     const Pointer pServer("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Server");
     const Pointer pContentEncoding("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Content-Encoding");
     const Pointer pCookies("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Set-Cookie");
+    const Pointer pContentType("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Content-Type");
 
     while(reader.read(record)) {
         std::string contentType = extractString(record.content, pType);
@@ -143,6 +145,8 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
                           extractString(record.content, pContentEncoding, "")));
 
             writer << std::to_string(pCookies.Get(record.content) != nullptr);
+
+            writer << Value::extractMIME(extractString(record.content, pContentType, ""));
 
             writer.next();
         } else {

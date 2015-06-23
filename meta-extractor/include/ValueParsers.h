@@ -26,6 +26,13 @@ namespace Value {
     uint8_t extractPathDepth(const std::string& path);
 
     /**
+     * Parses the MIME type from the "Content-Encoding" property of the HTML header.
+     * eg: "text/html; charset=UTF-8" -> "text/html"
+     * eg: "text/html" -> "text/html"
+     */
+    std::string extractMIME(const std::string& contentType);
+
+    /**
      * Canonicalize the HTTP Server header to the most used servers and remove
      * version information. Returns "other" for other servers and an empty
      * string if given an empty string

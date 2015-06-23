@@ -45,6 +45,15 @@ uint8_t Value::extractPathDepth(const std::string& path) {
     return std::count(path.begin(), path.end(), '/');
 }
 
+std::string Value::extractMIME(const std::string& contentType) {
+    size_t semPos = contentType.find(';');
+    if (semPos != std::string::npos) {
+        return contentType.substr(0, semPos);
+    } else {
+        return contentType;
+    }
+}
+
 std::string Value::canonicalizeServer(const std::string& server) {
     static const auto locale = std::locale::classic();
     static const std::vector<std::string> canonServers = {

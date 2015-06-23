@@ -32,6 +32,15 @@ TEST_CASE("Test ValueParsers", "[warc]") {
         REQUIRE(Value::extractTld("") == "");
     }
 
+    SECTION("Value::extractMIME") {
+        REQUIRE(Value::extractMIME("text/html") == "text/html");
+        REQUIRE(Value::extractMIME("text/http; charset=UTF-8") == "text/http");
+        REQUIRE(Value::extractMIME("text/html;") == "text/html");
+        REQUIRE(Value::extractMIME("text/html;;;;;") == "text/html");
+        REQUIRE(Value::extractMIME(";text/html;;;;;") == "");
+        REQUIRE(Value::extractMIME("") == "");
+    }
+
     SECTION("Value::canonicalizeServer") {
         REQUIRE(Value::canonicalizeServer("") == "");
         REQUIRE(Value::canonicalizeServer("webserver") == "other");
