@@ -128,6 +128,9 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
     const Pointer pStyles("/Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Head/Link");
     const Pointer pLinks("/Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Links");
 
+    const std::string testPathScript{"SCRIPT@/src"}, testPathLink{"A@/href"},
+                      testPathStyle{"STYLE/#text"}, testRelStyle{"stylesheet"};
+
     while(reader.read(record)) {
         std::string contentType = extractString(record.content, pType);
 
@@ -155,13 +158,10 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
             writer << Value::extractMIME(extractString(record.content, pContentType, ""));
 
             bool usesCDN = false;
-            const std::string testScriptType{"SCRIPT@/src"},
-                              testStyleRel{"stylesheet"},
-                              testLinkType{"STYLE/#text"};
             if(auto scripts = pScripts.Get(record.content)) {
                 for(const auto& script : *scripts) {
                     if(script.HasMember("path") && script.HasMember("url") &&
-                       testScriptType == script["path"].GetString()) {
+                       testPathScript == script["path"].GetString()) {
                         if(Value::checkCDN(script["url"].GetString())) {
                             usesCDN = true;
                             goto cdn_found;
@@ -172,7 +172,7 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
             if(auto styles = pStyles.Get(record.content)) {
                 for(const auto& style : *styles) {
                     if(style.HasMember("rel") && style.HasMember("url") &&
-                       testStyleRel == style["rel"].GetString()) {
+                       testRelStyle == style["rel"].GetString()) {
                         if(Value::checkCDN(style["url"].GetString())) {
                             usesCDN = true;
                             goto cdn_found;
@@ -180,60 +180,54 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
                     }
                 }
             }
-            if(auto links = pLinks.Get(record.content)) {
-                for(const auto& link : *links) {
-                    if(link.HasMember("path") && link.HasMember("href") &&
-                       testLinkType == link["path"].GetString() &&
-                       std::strstr(link["href"].GetString(), ".css") != nullptr) {
-                        if(Value::checkCDN(link["href"].GetString())) {
-                            usesCDN = true;
-                            goto cdn_found;
-                        }
-                    }
-                }
-            }
             cdn_found:
-            writer << std::to_string(usesCDN);
 
-            const std::string ahref("A@/href");
             uint16_t countLinksInner {0}, countLinksOuter {0}, countLinksRelative {0};
             if(auto links = pLinks.Get(record.content)) {
-                for(auto linkIter = links->Begin(); linkIter != links->End(); ++linkIter) {
-                    const rapidjson::Value& link = *linkIter;
-                    if(link.HasMember("path") && link.HasMember("url") &&
-                       ahref == link["path"].GetString()) {
-                        const char* linkurl = link["url"].GetString();
-                        if(linkurl == nullptr || *linkurl == '\0' ||
-                           prefix(linkurl, "javascript:") ||
-                           prefix(linkurl, "mailto:") ||
-                           prefix(linkurl, "<%")) {
-                            continue;
-                        }
-
-                        // trim whitespace at the beginning
-                        while(*linkurl == ' ' || *linkurl == '\t') {
-                            ++linkurl;
-                        }
-
-                        if(!prefix(linkurl, "http") && !prefix(linkurl, "//")) {
-                            ++countLinksRelative;
-                        } else {
-                            try {
-                                Poco::URI href(linkurl);
-                                if (href.isRelative()) {
-                                    ++countLinksRelative;
-                                } else if (href.getHost() == url.getHost()) {
-                                    ++countLinksInner;
-                                } else {
-                                    ++countLinksOuter;
-                                }
-                            } catch(const Poco::SyntaxException& e) {
-                                // ignore invalid uris
+                for(const auto& link : *links) {
+                    if(link.HasMember("path")) {
+                        if(testPathLink == link["path"].GetString() &&
+                           link.HasMember("url")) {
+                            const char* linkurl = link["url"].GetString();
+                            if(linkurl == nullptr || *linkurl == '\0' ||
+                               prefix(linkurl, "javascript:") ||
+                               prefix(linkurl, "mailto:") ||
+                               prefix(linkurl, "<%")) {
+                                continue;
                             }
+
+                            // trim whitespace at the beginning
+                            while(*linkurl == ' ' || *linkurl == '\t') {
+                                ++linkurl;
+                            }
+
+                            if(!prefix(linkurl, "http") && !prefix(linkurl, "//")) {
+                                ++countLinksRelative;
+                            } else {
+                                try {
+                                    Poco::URI href(linkurl);
+                                    if (href.isRelative()) {
+                                        ++countLinksRelative;
+                                    } else if (href.getHost() == url.getHost()) {
+                                        ++countLinksInner;
+                                    } else {
+                                        ++countLinksOuter;
+                                    }
+                                } catch(const Poco::SyntaxException& e) {
+                                    // ignore invalid uris
+                                }
+                            }
+                        } else if(!usesCDN &&
+                                  testPathStyle == link["path"].GetString() &&
+                                  link.HasMember("href") &&
+                                  std::strstr(link["href"].GetString(), ".css") != nullptr) {
+                            usesCDN = Value::checkCDN(link["href"].GetString());
                         }
                     }
                 }
             }
+
+            writer << std::to_string(usesCDN);
             writer << std::to_string(countLinksInner + countLinksRelative);
             writer << std::to_string(countLinksOuter);
 
