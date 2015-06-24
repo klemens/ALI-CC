@@ -18,7 +18,6 @@ void processWARC(std::istream&, CSV::Writer&, const PublicSuffix&, int);
 const rapidjson::Value& extract(const rapidjson::Document&, const rapidjson::Pointer&);
 const char* extractString(const rapidjson::Document&, const rapidjson::Pointer&);
 const char* extractString(const rapidjson::Document&, const rapidjson::Pointer&, const char*);
-bool prefix(const char * string, const char * prefix);
 
 constexpr int noVerbosity = 0;
 constexpr int lowVerbosity = 1;
@@ -190,9 +189,9 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
                            link.HasMember("url")) {
                             const char* linkurl = link["url"].GetString();
                             if(linkurl == nullptr || *linkurl == '\0' ||
-                               prefix(linkurl, "javascript:") ||
-                               prefix(linkurl, "mailto:") ||
-                               prefix(linkurl, "<%")) {
+                               Value::prefix(linkurl, "javascript:") ||
+                               Value::prefix(linkurl, "mailto:") ||
+                               Value::prefix(linkurl, "<%")) {
                                 continue;
                             }
 
@@ -201,7 +200,7 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
                                 ++linkurl;
                             }
 
-                            if(!prefix(linkurl, "http") && !prefix(linkurl, "//")) {
+                            if(!Value::prefix(linkurl, "http") && !Value::prefix(linkurl, "//")) {
                                 ++countLinksRelative;
                             } else {
                                 try {
@@ -272,13 +271,4 @@ const char* extractString(const rapidjson::Document& doc, const rapidjson::Point
     } else {
         return defaultString;
     }
-}
-
-bool prefix(const char * string, const char * prefix) {
-    while(*prefix) {
-        if(*prefix++ != *string++) {
-            return false;
-        }
-    }
-    return true;
 }
