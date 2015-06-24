@@ -5,7 +5,7 @@ TEST_BIN = test-meta-extractor
 # compiler/linker settings
 CXX               = g++
 override GFLAGS  +=
-override CFLAGS  += -c -Wall -Wextra -Werror -pedantic --std=c++11 -O2 -Iinclude $(GFLAGS)
+override CFLAGS  += -c -Wall -Wextra -Werror -pedantic --std=c++11 -O3 -march=native -Iinclude $(GFLAGS)
 override LFLAGS  += $(GFLAGS)
 
 # directories
