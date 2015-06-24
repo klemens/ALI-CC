@@ -101,6 +101,7 @@ void writeCSVHeader(CSV::Writer& csv) {
         << "compression"        // bool   : yes/no
         << "cookies"            // bool   : yes/no
         << "mime"               // string : text/html
+        << "charset"            // string : charset
         << "cdn"                // bool   : uses CDNs or not
         << "internal links"     // uint16 : number of relativ + same domain links
         << "external links";    // uint16 : number of outgoing links
@@ -121,6 +122,7 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
     const Pointer pContentEncoding("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Content-Encoding");
     const Pointer pCookies("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Set-Cookie");
     const Pointer pContentType("/Envelope/Payload-Metadata/HTTP-Response-Metadata/Headers/Content-Type");
+    const Pointer pMetas("/Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Head/Metas");
     const Pointer pScripts("/Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Head/Scripts");
     const Pointer pStyles("/Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Head/Link");
     const Pointer pLinks("/Envelope/Payload-Metadata/HTTP-Response-Metadata/HTML-Metadata/Links");
@@ -153,6 +155,23 @@ void processWARC(std::istream& input, CSV::Writer& writer, const PublicSuffix& s
             writer << std::to_string(pCookies.Get(record.content) != nullptr);
 
             writer << Value::extractMIME(extractString(record.content, pContentType, ""));
+
+            auto charset = Value::extractCharset(extractString(record.content, pContentType, ""));
+            if(charset.empty()) {
+                if(auto metas = pMetas.Get(record.content)) {
+                    for(const auto& meta : *metas) {
+                        if(meta.HasMember("http-equiv") && meta.HasMember("content") &&
+                           Value::equalsI("content-type", meta["http-equiv"].GetString())) {
+                            charset = Value::extractCharset(meta["content"].GetString());
+                            break;
+                        } else if(meta.HasMember("charset")) {
+                            charset = meta["charset"].GetString();
+                            break;
+                        }
+                    }
+                }
+            }
+            writer << Value::canonicalizeCharset(charset);
 
             bool usesCDN = false;
             if(auto scripts = pScripts.Get(record.content)) {

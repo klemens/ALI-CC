@@ -41,6 +41,31 @@ TEST_CASE("Test ValueParsers", "[warc]") {
         REQUIRE(Value::extractMIME("") == "");
     }
 
+    SECTION("Value::extractCharset") {
+        REQUIRE(Value::extractCharset("") == "");
+        REQUIRE(Value::extractCharset("text/html") == "");
+        REQUIRE(Value::extractCharset("text/html; charset=UTF-8") == "utf-8");
+        REQUIRE(Value::extractCharset("text/html; charset=UTF-8 ") == "utf-8");
+        REQUIRE(Value::extractCharset("text/html; charset=UTF-8; peter") == "utf-8");
+        REQUIRE(Value::extractCharset("application/xml; charset=iso-8859-15") == "iso-8859-15");
+        REQUIRE(Value::extractCharset("text/html; charset=UTF8") == "utf8");
+    }
+
+    SECTION("Value::canonicalizeCharset") {
+        REQUIRE(Value::canonicalizeCharset("") == "");
+        REQUIRE(Value::canonicalizeCharset("utf-8") == "utf");
+        REQUIRE(Value::canonicalizeCharset("utf8") == "utf");
+        REQUIRE(Value::canonicalizeCharset("utf-16") == "utf");
+        REQUIRE(Value::canonicalizeCharset("iso-8859-15") == "iso-8859");
+        REQUIRE(Value::canonicalizeCharset("shift_jis") == "jp");
+        REQUIRE(Value::canonicalizeCharset("iso-2022-jp") == "jp");
+        REQUIRE(Value::canonicalizeCharset("big5") == "cn");
+        REQUIRE(Value::canonicalizeCharset("gbk") == "cn");
+        REQUIRE(Value::canonicalizeCharset("euc-kr") == "kr");
+        REQUIRE(Value::canonicalizeCharset("macintosh") == "other");
+        REQUIRE(Value::canonicalizeCharset("ibm866") == "other");
+    }
+
     SECTION("Value::canonicalizeServer") {
         REQUIRE(Value::canonicalizeServer("") == "");
         REQUIRE(Value::canonicalizeServer("webserver") == "other");
@@ -77,10 +102,22 @@ TEST_CASE("Test ValueParsers", "[warc]") {
         REQUIRE(Value::prefix("abc", "a") == true);
         REQUIRE(Value::prefix("abc", "ab") == true);
         REQUIRE(Value::prefix("abc", "abc") == true);
+        REQUIRE(Value::prefix("abc", "abcd") == false);
         REQUIRE(Value::prefix("bcd", "a") == false);
         REQUIRE(Value::prefix("bcd", "ab") == false);
         REQUIRE(Value::prefix("bcd", "abc") == false);
         REQUIRE(Value::prefix("bcd", "abcd") == false);
         REQUIRE(Value::prefix("", "a") == false);
+    }
+
+    SECTION("Value::equalsI") {
+        REQUIRE(Value::equalsI("", "") == true);
+        REQUIRE(Value::equalsI("a", "") == false);
+        REQUIRE(Value::equalsI("", "a") == false);
+        REQUIRE(Value::equalsI("a", "a") == true);
+        REQUIRE(Value::equalsI("A", "a") == true);
+        REQUIRE(Value::equalsI("a", "A") == true);
+        REQUIRE(Value::equalsI("A", "A") == true);
+        REQUIRE(Value::equalsI("aBc", "AbC") == true);
     }
 }

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <map>
 #include <locale>
 #include <cstring>
 #include "WARCException.h"
@@ -53,6 +54,46 @@ std::string Value::extractMIME(const std::string& contentType) {
     } else {
         return contentType;
     }
+}
+
+std::string Value::extractCharset(const std::string& contentType) {
+    size_t charsetBegin = contentType.find("charset=");
+    if(charsetBegin != std::string::npos) {
+        charsetBegin += 8; // sizeof("charset=") - 1
+        if(charsetBegin < contentType.size()) {
+            size_t charsetEnd = contentType.find_first_of(" \t,;", charsetBegin);
+            auto charset = contentType.substr(charsetBegin, charsetEnd - charsetBegin);
+            std::transform(charset.begin(), charset.end(), charset.begin(), ::tolower);
+            return charset;
+        }
+    }
+    return "";
+}
+
+std::string Value::canonicalizeCharset(const std::string& charset) {
+    static const std::map<std::string, std::string> canonCharsets = {
+        { "utf", "utf" },
+        { "iso-8859-", "iso-8859" },
+        { "windows-", "windows" },
+        { "ascii", "ascii" },
+        { "jis", "jp" },
+        { "big5", "cn" },
+        { "gbk", "cn" },
+        { "jp", "jp" },
+        { "kr", "kr" }
+    };
+
+    if(charset.empty()) {
+        return charset;
+    }
+
+    for(const auto& canonCharset : canonCharsets) {
+        if(charset.find(canonCharset.first) != std::string::npos) {
+            return canonCharset.second;
+        }
+    }
+
+    return "other";
 }
 
 std::string Value::canonicalizeServer(const std::string& server) {
@@ -114,6 +155,17 @@ bool Value::prefix(const char* string, const char* prefix) {
         }
     }
     return true;
+}
+
+bool Value::equalsI(const char* a, const char* b) {
+    static const auto locale = std::locale::classic();
+    while(*a && *b) {
+        if(std::tolower(*a++) != std::tolower(*b++)) {
+            return false;
+        }
+    }
+    // should both be '\0':
+    return *a == *b;
 }
 
 bool Value::checkCDN(const char* url) {

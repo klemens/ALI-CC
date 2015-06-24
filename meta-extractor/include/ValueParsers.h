@@ -33,6 +33,24 @@ namespace Value {
     std::string extractMIME(const std::string& contentType);
 
     /**
+     * Extracts the charset (encoding) from the given HTTP Content-Type
+     * eg: "text/html; charset=UTF-8" -> "utf-8"
+     * eg: "text/html" -> ""
+     */
+    std::string extractCharset(const std::string& contentType);
+
+    /**
+     * Canonicalize the charset to the most used ones. Returns "other" for
+     * other charset and an empty string if given one.
+     * eg: utf-8 -> utf
+     * eg: utf-16 -> utf
+     * eg: windows-1256 -> windows
+     * eg: iso-8859-1 -> iso
+     * eg: tis-620 -> other
+     */
+    std::string canonicalizeCharset(const std::string& charset);
+
+    /**
      * Canonicalize the HTTP Server header to the most used servers and remove
      * version information. Returns "other" for other servers and an empty
      * string if given an empty string
@@ -65,6 +83,11 @@ namespace Value {
      * Check if string starts with the given prefix
      */
     bool prefix(const char* string, const char* prefix);
+
+    /**
+     * Check if the given strings are equal ignoring case
+     */
+    bool equalsI(const char* a, const char* b);
 }
 
 #endif
