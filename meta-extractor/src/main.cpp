@@ -101,11 +101,9 @@ void writeCSVHeader(CSV::Writer& csv) {
         << "compression"        // bool   : yes/no
         << "cookies"            // bool   : yes/no
         << "mime"               // string : text/html
-        << "scripts"            // string : string[] - clustering
-        << "styles"             // string : string[] - clustering
         << "cdn"                // bool   : uses CDNs or not
-        << "links (intern)"     // uint16
-        << "links (extern)";    // uint16
+        << "internal links"     // uint16 : number of relativ + same domain links
+        << "external links";    // uint16 : number of outgoing links
 
     csv.next();
 }
