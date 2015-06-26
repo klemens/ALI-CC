@@ -33,6 +33,8 @@ if ! ssh -oBatchMode=yes $4 exit ; then
 fi
 sshArguments="-oBatchmode=yes $4"
 
+echo $(date -u -Is) "starting extraction" >> batch-extract.log
+
 while true; do
     # read first line
     url=$(head -n 1 $filename)
@@ -49,21 +51,25 @@ while true; do
     echo $(date -u -Is) $baseUrl$url $remoteFileTmp >> batch-extract.log
 
     # execute extraction
-    curl "$baseUrl$url" \
+    curl --silent --max-time 500 "$baseUrl$url" \
          | gzip -d \
          | ./meta-extractor/meta-extractor -s "$suffixes" \
          | gzip -c \
          | ssh $sshArguments "cat - > $remoteFileTmp"
     if [ $? -ne 0 ]; then
-        echo "error while processing, aborting"
-        exit 10
+        echo "error while processing, retrying in 30 s"
+        echo $(date -u -Is) "error while processing" >> batch-extract.log
+        sleep 30
+        continue
     fi
 
     # mark file as complete
     ssh $sshArguments "mv $remoteFileTmp $remoteFile"
     if [ $? -ne 0 ]; then
-        echo "error while marking as ready, aborting"
-        exit 10
+        echo "error while marking as ready, retrying in 30 s"
+        echo $(date -u -Is) "error while marking as ready" >> batch-extract.log
+        sleep 30
+        continue
     fi
 
     echo "marked as ready"
