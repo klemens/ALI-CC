@@ -43,7 +43,8 @@ while true; do
         break
     fi
 
-    remoteFileBase=$(basename "$url")
+    # repalce (${url//a/b}) all / with _
+    remoteFileBase=${url////_}
     remoteFile=result/${remoteFileBase%.warc.wat.gz}.csv.gz
     remoteFileTmp=${remoteFile}.tmp
 
