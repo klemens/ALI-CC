@@ -25,10 +25,48 @@
 
 \subsection{Organisation}
 \begin{frame}{\insertsection: \insertsubsection}
+    \tikzoverlay[text width=0cm] at (9cm,0.25cm) {
+        \tikz node (label) at (0,0)[]{
+            \includegraphics[height=1.5cm]{images/cc-logo}
+        };
+    };
+    \begin{itemize}
+        \item Non-Profit Organisation
+        \item 2007 durch Gil Elbaz gegründet
+        \item Mitglieder stellen unentgeldlich Fachwissen und Zeit zur Verfügung
+    \end{itemize}
+    \vskip5mm
+    \textbf{``Our goal is to democratize the data so everyone, not just big companies, can do high quality research and analysis.''}
+    \hfill-- \textit{Common Crawl Foundation}
+\end{frame}
+
+\begin{frame}{\insertsection: \insertsubsection}
+    \begin{itemize}
+        \item (Fast) monatliche Crawls des Web und freie Bereitstellung der Datensätze in verschiedenen Formate
+        \item Web-Archiv mit über 168 TB von 2,1 Mrd. Websites (Stand: Mai 2015) % laut: http://blog.commoncrawl.org/2015/05/april-2015-crawl-archive-available/
+        \item viele Code-Beispiele zur Verarbeitung der Daten
+        \item Hosting gesponsert von AWS (Public Data Set)
+    \end{itemize}
 \end{frame}
 
 \subsection{Technik}
 \begin{frame}{\insertsection: \insertsubsection}
+    \begin{itemize}
+        \item Speicherung im WARC-Format (Web ARChive)
+        \item CCBot: modifizierter Apache Nutch 1.7
+            \begin{itemize}
+                \item Basiert auf Lucene, Solr und Hadoop
+                \item Verteiltes Crawling bei AWS
+                \item „Freundlicher Crawler“: beachtet robots.txt und erzeugt so wenig Last wie möglich
+            \end{itemize}
+        \item Drei verschiedene Ergebnisse
+            \begin{itemize}
+                \item WARC: Enthält komplette HTTP Konversationen getrennt nach
+                    Anfrage und Antwort (Records)
+                \item WAT: Metadaten für jeden Record
+                \item WET: Reintext-Extrakt der Antworten
+            \end{itemize}
+    \end{itemize}
 \end{frame}
 
 

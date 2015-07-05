@@ -42,6 +42,15 @@
 \tikzstyle{vertex}=[inner sep=10pt]
 \tikzstyle{edge}=[line width=1]
 
+\tikzset{
+  every overlay node/.style={
+    anchor=north west,
+  },
+}
+\def\tikzoverlay{%
+   \tikz[baseline,overlay]\node[every overlay node]
+}%
+
 \theoremstyle{definition}
 \newtheorem*{algorithm}{Algorithmus}
 \newtheorem*{observation}{Beobachtung}
