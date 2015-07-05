@@ -1,0 +1,47 @@
+\usepackage[ngerman]{babel}
+\usepackage{graphicx}
+\usepackage{stmaryrd}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{tikz}
+
+% theme settings
+\usetheme{default}
+\usefonttheme{structurebold}
+\usecolortheme{default}
+\definecolor{rvs-darkred}{RGB}{192,0,0}
+\definecolor{rvs-darkgreen}{RGB}{0,130,0}
+\definecolor{rvs-darkgrey}{RGB}{70,70,70}
+\setbeamercolor*{title}{fg=rvs-darkred}
+\setbeamercolor*{frametitle}{fg=rvs-darkred}
+\setbeamercolor*{block title}{fg=rvs-darkgrey}
+\setbeamercolor*{block title example}{fg=rvs-darkgreen}
+\setbeamercolor*{section in toc}{fg=rvs-darkgrey}
+\setbeamercolor*{item}{fg=black}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{footline}{
+    \usebeamercolor[fg]{page number in head/foot}
+    \usebeamerfont{page number in head/foot}
+    \hspace{.5em}
+    Anwendungen Linguistische Informatik
+    \hfill
+    \insertframenumber\kern.5em\vskip.5em
+}
+\defbeamertemplate*{subsection in toc}{sub on 1 line}{
+    \ifnum\inserttocsubsectionnumber=1
+        \quad\inserttocsubsection
+    \else
+        \hspace{-1em},\hspace{.5em}\inserttocsubsection
+    \fi
+}
+
+% tikz graph settings
+\usetikzlibrary{arrows,positioning,calc}
+\tikzstyle{vertex}=[inner sep=10pt]
+\tikzstyle{edge}=[line width=1]
+
+\theoremstyle{definition}
+\newtheorem*{algorithm}{Algorithmus}
+\newtheorem*{observation}{Beobachtung}
