@@ -72,6 +72,26 @@
 
 \section{Analyse}
 
+
+\tikzstyle{block} = [rectangle, draw, text width=7em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+
+\subsection{Extraktion}
+\begin{frame}{\insertsection: \insertsubsection}
+    \centering
+    \vspace{.5cm}
+    \begin{tikzpicture}[auto]
+        \node[block] (CC) at (0,0) {Common Crawl};
+        \node[block, right=4cm of CC] (META) {meta-extractor\footnotemark};
+        \node[block, below=2cm of META] (MONET) {MonetDB};
+        \node[block, left=4cm of MONET] (R) {R};
+        \path[line] (CC) -- node {Download (curl)} (META);
+        \path[line] (META) -- node {csv} (MONET);
+        \path[line] (MONET) -- node {MonetDB.R} (R);
+    \end{tikzpicture}
+    \footnotetext{\url{https://github.com/klemens/ALI-CC}}
+\end{frame}
+
 \subsection{Daten}
 \begin{frame}{\insertsection: \insertsubsection}
     \definecolor{light-gray}{gray}{0.6}
@@ -97,10 +117,6 @@
             Externe Links      & uint16            & Anzahl ausgehende Links
         \end{tabular}
     }
-\end{frame}
-
-\subsection{Extraktion}
-\begin{frame}{\insertsection: \insertsubsection}
 \end{frame}
 
 
