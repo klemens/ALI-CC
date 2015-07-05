@@ -74,6 +74,29 @@
 
 \subsection{Daten}
 \begin{frame}{\insertsection: \insertsubsection}
+    \definecolor{light-gray}{gray}{0.6}
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{lcl}
+            \textbf{Name}      & \textbf{Datentyp} & \textbf{Beispiel} \\ \hline\hline
+            UUID               & uint128           & \textcolor{light-gray}{14a939f4-2355-11e5-b5f7-727283247c7f} \\ \hline
+            Zeitstempel        & string            & \textcolor{light-gray}{2015-07-06T11:03:18T} \\ \hline
+            Verwendung TLS     & bool              & https ja/nein \\ \hline
+            Hostname           & string            & \textcolor{light-gray}{amazon.co.uk} \\ \hline
+            TLD                & string            & \textcolor{light-gray}{uk} \\ \hline
+            Public Suffix      & string            & \textcolor{light-gray}{co.uk} \\ \hline
+            Pfadtiefe          & uint8             & \textit{test/cool/cool.html} $\rightarrow$ \textcolor{light-gray}{3} \\ \hline
+            Pfadlänge          & uint16            & \textit{test/cool/cool.html} $\rightarrow$ \textcolor{light-gray}{19} \\ \hline
+            Server             & string            & \textcolor{light-gray}{apache}, \textcolor{light-gray}{nginx}, \dots \\ \hline
+            Kompression        & bool              & \textcolor{light-gray}{gzip}, \textcolor{light-gray}{deflate} in \textit{Content-Encoding} \\ \hline
+            Cookies            & bool              & \textit{Set-Cookie} vorhanden \\ \hline
+            MIME-Typ           & string            & \textcolor{light-gray}{text/html}, \textcolor{light-gray}{application/xml}, \dots\\ \hline
+            Charset            & string            & \textcolor{light-gray}{utf}, \textcolor{light-gray}{iso-8859}, \dots \\ \hline
+            Verwendung von CDN & bool              & CDN ja/nein \\ \hline
+            Interne Links      & uint16            & Anzahl relative Links + gleicher Host \\ \hline
+            Externe Links      & uint16            & Anzahl ausgehende Links
+        \end{tabular}
+    }
 \end{frame}
 
 \subsection{Extraktion}
