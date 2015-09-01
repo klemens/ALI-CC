@@ -1,0 +1,297 @@
+\documentclass[a4paper,12pt,titlepage=false]{scrreprt}
+
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, left=2cm, right=2cm, top=1.5cm, bottom=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{stmaryrd}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\tikzstyle{block} = [rectangle, draw, text width=7em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+
+\definecolor{light-gray}{gray}{0.6}
+
+\titlehead{Seminar: Anwendungen Linguistische Informatik \hfill Vortrag am 06.07.2015}
+\title{\vspace{3cm}Common Crawl}
+\subtitle{Analyse des Crawling-Prozesses und der Textextraktion}
+\author{Erik Körner \and Kai Hainke \and Klemens Schölhorn}
+
+% show toc on titlepage
+\setuptoc{toc}{leveldown}
+
+% no page number on titlepage
+\renewcommand*{\titlepagestyle}{empty}
+
+\begin{document}
+
+\maketitle
+\vspace{2cm}
+\tableofcontents
+
+\chapter{Common Crawl}
+
+\section{Organisation}
+
+\begin{itemize}
+    \item Non-Profit Organisation
+    \item 2007 durch Gil Elbaz gegründet
+    \item Mitglieder stellen unentgeldlich Fachwissen und Zeit zur Verfügung
+\end{itemize}
+\textbf{``Our goal is to democratize the data so everyone, not just big companies, can do high quality research and analysis.''}
+\hfill-- \textit{Common Crawl Foundation}
+
+\begin{itemize}
+    \item (Fast) monatliche Crawls des Web und freie Bereitstellung der Datensätze
+    \item Letzter Crawl: 168 TB, 2,1 Mrd. Websites\footnote{\url{http://blog.commoncrawl.org/2015/05/april-2015-crawl-archive-available/} (Stand: Mai 2015)}
+    \item Viele Code-Beispiele zur Verarbeitung der Daten
+    \item Hosting gesponsert von AWS (Public Data Set),\\gesamt: 541 TB\footnote{\url{https://aws.amazon.com/datasets/41740}}
+\end{itemize}
+
+
+\section{Technik}
+
+\begin{itemize}
+    \item Speicherung im WARC-Format (Web ARChive)
+    \item CCBot: modifizierter Apache Nutch 1.7
+        \begin{itemize}
+            \item Basiert auf Lucene, Solr und Hadoop
+            \item Verteiltes Crawling bei AWS
+            \item „Freundlicher Crawler“: beachtet robots.txt und erzeugt so wenig Last wie möglich
+        \end{itemize}
+    \item Drei verschiedene Ergebnisse
+        \begin{itemize}
+            \item WARC: Enthält komplette HTTP Konversationen getrennt nach
+                Anfrage und Antwort (Records)
+            \item WAT: Metadaten für jeden Record
+            \item WET: Reintext-Extrakt der Antworten
+        \end{itemize}
+\end{itemize}
+
+
+\chapter{Analyse}
+
+\section{meta-extractor}
+
+TODO...
+
+\section{Extraktion}
+\begin{center}
+\begin{tikzpicture}[auto]
+    \node[block] (CC) at (0,0) {Common Crawl};
+    \node[block, right=4cm of CC] (META) {meta-extractor\footnotemark};
+    \node[block, below=2cm of META] (MONET) {MonetDB};
+    \node[block, left=4cm of MONET] (R) {R};
+    \path[line] (CC) -- node {Download (curl)} (META);
+    \path[line] (META) -- node {csv} (MONET);
+    \path[line] (MONET) -- node {MonetDB.R} (R);
+\end{tikzpicture}
+\end{center}
+
+\section{Daten}
+\centering
+\resizebox{\textwidth}{!}{%
+    \begin{tabular}{lcl}
+        \textbf{Name}      & \textbf{Datentyp} & \textbf{Beispiel} \\ \hline\hline
+        UUID               & uint128           & \textcolor{light-gray}{14a939f4-2355-11e5-b5f7-727283247c7f} \\ \hline
+        Zeitstempel        & string            & \textcolor{light-gray}{2015-07-06T11:03:18T} \\ \hline
+        Verwendung TLS     & bool              & https ja/nein \\ \hline
+        Hostname           & string            & \textcolor{light-gray}{amazon.co.uk} \\ \hline
+        TLD                & string            & \textcolor{light-gray}{uk} \\ \hline
+        Public Suffix      & string            & \textcolor{light-gray}{co.uk} \\ \hline
+        Pfadtiefe          & uint8             & \textit{test/cool/cool.html} $\rightarrow$ \textcolor{light-gray}{3} \\ \hline
+        Pfadlänge          & uint16            & \textit{test/cool/cool.html} $\rightarrow$ \textcolor{light-gray}{19} \\ \hline
+        Server             & string            & \textcolor{light-gray}{apache}, \textcolor{light-gray}{nginx}, \dots \\ \hline
+        Kompression        & bool              & \textcolor{light-gray}{gzip}, \textcolor{light-gray}{deflate} in \textit{Content-Encoding} \\ \hline
+        Cookies            & bool              & \textit{Set-Cookie} vorhanden \\ \hline
+        MIME-Typ           & string            & \textcolor{light-gray}{text/html}, \textcolor{light-gray}{application/xml}, \dots\\ \hline
+        Charset            & string            & \textcolor{light-gray}{utf}, \textcolor{light-gray}{iso-8859}, \dots \\ \hline
+        Verwendung von CDN & bool              & CDN ja/nein \\ \hline
+        Interne Links      & uint16            & Anzahl relative Links + gleicher Host \\ \hline
+        Externe Links      & uint16            & Anzahl ausgehende Links
+    \end{tabular}
+}
+
+
+\chapter{Ergebnisse}
+
+\section{TLD}
+\vspace{.1cm}
+\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_tld_top10}}
+
+\vspace{.1cm}
+\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_tld}}
+
+\vspace{.4cm}
+\makebox[\textwidth][c]{\includegraphics[width=\textwidth]{images/selection_bias}}
+
+\vspace{.1cm}
+\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_tld_comparison}}
+
+\section{Public Suffix}
+\vspace{.1cm}
+\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_pub_suffixes_top10}}
+
+\vspace{.1cm}
+\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_pub_suffixes}}
+
+\section{Mime-Type}
+\vspace{.1cm}
+\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_mime}}
+
+\section{TLS}
+\vspace{.1cm}
+\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_https}}
+
+\section{Encoding}
+\vspace{.1cm}
+\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_charset}}
+
+\section{Server}
+\vspace{.1cm}
+\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_server}}
+
+
+\chapter{Textextraktion}
+
+\centering{
+    \includegraphics[trim=0 105px 0 0, clip=true, width=.9\textwidth]{images/guardian-website}
+}
+
+\scriptsize
+\vspace{.1cm}
+\url{http://www.theguardian.com/world/2013/jun/09/edward-snowden-nsa-whistleblower-surveillance}
+
+\scriptsize
+Edward Snowden: the whistleblower behind the NSA surveillance revelations $|$ US news $|$ The Guardian
+
+\section{jWarcEx}
+
+\begin{lstlisting}[breaklines=true]
+Skip to main content
+
+browse all sections close
+
+Glenn Greenwald on security and liberty
+
+Edward Snowden: the whistleblower behind the NSA surveillance revelations
+
+The 29-year-old source behind the biggest intelligence leak in the NSA's history explains his motives, his uncertain future and why he never intended on hiding in the shadows
+
+Q\&A with NSA whistleblower Edward Snowden: ``I do not expect to see home again''
+
+Glenn Greenwald, Ewen MacAskill and Laura Poitras in Hong Kong
+
+Tuesday 11 June 2013 09.00 EDT Last modified on Saturday 4 October 2014 10.54 EDT
+
+Sorry, your browser is unable to play this video.
+
+The individual responsible for one of the most significant leaks in US political history is Edward Snowden, a 29-year-old former technical assistant for the CIA and current employee of the defence contractor Booz Allen Hamilton. Snowden has been working at the National Security Agency for the last four years as an employee of various outside contractors, including Booz Allen and Dell.
+
+The Guardian, after several days of interviews, is revealing his identity at his request. From the moment he decided to disclose numerous top-secret documents to the public, he was determined not to opt for the protection of anonymity. ``I have no intention of hiding who I am because I know I have done nothing wrong,'' he said.
+
+(...)
+\end{lstlisting}
+
+\section{Mozilla Readability.js}
+
+\begin{lstlisting}[breaklines=true]
+Edward Snowden: the whistleblower behind the NSA surveillance revelations
+
+Laura Poitras
+
+The individual responsible for one of the most significant leaks in US political history is Edward Snowden, a 29-year-old former technical assistant for the CIA and current employee of the defence contractor Booz Allen Hamilton. Snowden has been working at the National Security Agency for the last four years as an employee of various outside contractors, including Booz Allen and Dell.
+
+The Guardian, after several days of interviews, is revealing his identity at his request. From the moment he decided to disclose numerous top-secret documents to the public, he was determined not to opt for the protection of anonymity. ``I have no intention of hiding who I am because I know I have done nothing wrong,'' he said.
+
+(...)
+\end{lstlisting}
+
+\section{Common Crawl}
+
+\begin{lstlisting}[breaklines=true]
+Lance Armstrong, Tour de France champ, retires | abc7.com
+
+GO
+
+Personalize your weather by entering a location.
+
+Sorry, but the location you entered was not found. Please try again.
+
+Sections
+
+Traffic
+
+Video
+
+Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
+
+Home
+
+Accuweather
+
+Traffic
+
+Video
+
+Photos
+
+Mobile Apps
+
+Local News Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
+
+Map My News
+
+Shows Live Well Network
+
+Follow Us
+
+BREAKING NEWS
+
+(...)
+\end{lstlisting}
+
+\vspace{.2cm}
+\url{http://abc7.com/archive/7962461}
+
+\section{jWarcEx}
+
+\begin{lstlisting}[breaklines=true]
+Personalize your weather by entering a location.
+
+Sorry, but the location you entered was not found. Please try again.
+
+\vspace{.2cm}
+Sections Traffic Video Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
+
+Home Accuweather Traffic Video Photos Mobile Apps
+
+Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
+
+\quad BREAKING NEWS ABC shows live and on-demand -- Download the WATCH ABC app!
+
+\vspace{.2cm}
+Lance Armstrong, Tour de France champ, retires
+
+Seven-time Tour de France champion Lance Armstrong is retiring. He ends his career amidst a federal doping investigation.
+
+February 16, 2011 12:00:00 AM PST
+
+Seven-time Tour de France champion Lance Armstrong said he's retiring from the professional cycling circuit, this time for good. The 39-year-old is calling it ``Retirement 2.0'' and is making it clear there is no reset button this time.
+
+\vspace{.2cm}
+He says he wants to spend more time with his children and dedicate himself even more to the fight against cancer with his "Livestrong" Foundation.
+
+(...)
+\end{lstlisting}
+
+\vspace{.2cm}
+\url{http://abc7.com/archive/7962461}
+
+
+\end{document}
