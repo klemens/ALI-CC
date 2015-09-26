@@ -4,6 +4,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage[a4paper, left=2cm, right=2cm, top=1.5cm, bottom=2cm]{geometry}
 \usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{setspace}
 \usepackage{tikz}
 \usepackage{stmaryrd}
 \usepackage{listings}
@@ -34,6 +36,8 @@
 \vspace{2cm}
 \tableofcontents
 
+\onehalfspacing
+
 \chapter{Common Crawl}
 
 \section{Organisation}
@@ -57,13 +61,13 @@
 \section{Technik}
 
 \begin{itemize}
-    \item Speicherung im WARC-Format (Web ARChive)
     \item CCBot: modifizierter Apache Nutch 1.7
         \begin{itemize}
             \item Basiert auf Lucene, Solr und Hadoop
             \item Verteiltes Crawling bei AWS
             \item „Freundlicher Crawler“: beachtet robots.txt und erzeugt so wenig Last wie möglich
         \end{itemize}
+    \item Speicherung im WARC-Format (Web ARChive)
     \item Drei verschiedene Ergebnisse
         \begin{itemize}
             \item WARC: Enthält komplette HTTP Konversationen getrennt nach
@@ -76,46 +80,101 @@
 
 \chapter{Analyse}
 
-\section{meta-extractor}
+Die Analyse erfolgte anhand des Crawls vom April 2015, des zum Zeitpunkt des
+Vortrages aktuellsten Crawls. Der komplette Crawl besitzt eine Größe von über
+168 TB\footnote{\url{http://blog.commoncrawl.org/2015/05/april-2015-crawl-archive-available/}}.
+Da eine Bearbeitung dieser Datenmenge auf eigenen Servern aufgrund von
+Bandbreitenbeschränkungen und eine Bearbeitung in AWS mit Hilfe von EC2-Instanzen
+aufgrund von finanziellen Einschränkungen nicht möglich war, haben wir unsere
+Analyse auf die WAT-Dateien beschränkt, die aus knapp 39000 Dateien zu
+durchschnittlich je 315 MiB bestehen und damit zusammen nur rund 12 TB groß sind.
+Davon konnten wir bis zum Vortrag 53 \% analysieren.
 
-TODO...
+\section{Übersicht}
 
-\section{Extraktion}
-\begin{center}
+\begin{wrapfigure}{r}{.54\textwidth}
+\label{wrap-fig:1}
 \begin{tikzpicture}[auto]
     \node[block] (CC) at (0,0) {Common Crawl};
-    \node[block, right=4cm of CC] (META) {meta-extractor\footnotemark};
-    \node[block, below=2cm of META] (MONET) {MonetDB};
-    \node[block, left=4cm of MONET] (R) {R};
+    \node[block, right=3.5cm of CC] (META) {meta-extractor};
+    \node[block, below=1.5cm of META] (MONET) {MonetDB};
+    \node[block, left=3.5cm of MONET] (R) {R};
     \path[line] (CC) -- node {Download (curl)} (META);
     \path[line] (META) -- node {csv} (MONET);
     \path[line] (MONET) -- node {MonetDB.R} (R);
 \end{tikzpicture}
+\end{wrapfigure}
+
+Die nebenstehende Abbildung zeigt den strukturellen Ablauf der Analyse.
+
+Der Download und die Extraktion der benötigten Daten mit Hilfe des
+\texttt{meta-extractor}s erfolgte parallel auf dem zur Verfügung gestellten
+Praktikumsrechner und auf einem privaten Server eines Autors. Dabei wurden keine
+Dateien lokal zwischengespeichert, sondern die WAT-Dateien mittels Unix-Pipes
+direkt von \texttt{curl} in den \texttt{meta-extractor} und anschließend die
+resultierenden csv-Dateien mittels \texttt{ssh} direkt auf den genannten
+privaten Server zur weiteren Analyse geladen.
+
+Dazu wurden die Daten in die spaltenorientierte Datenbank
+\texttt{MonetDB}\footnote{\url{https://www.monetdb.org/}} importiert, um
+anschließend mittels der \texttt{R}-Anbindung darauf in \texttt{R} Analysen
+durchführen zu können.
+
+\section{\texttt{meta-extractor}}
+
+Der \texttt{meta-extractor} ist ein in \texttt{C++} geschriebenes Programm,
+das sequentiell Metadaten-WARC-Records aus WAT-Dateien auslesen und daraus
+die im Abschnitt \ref{csv-data} beschriebenen Metadaten als csv-Datei extrahieren
+kann.
+
+Dazu wurden neben einem csv-Writer ein standardkonformer WARC-Parser und eine
+Trie-Implementierung für den effizienten Lookup des \texttt{Public Suffix} einer
+Domain aus der \texttt{Public Suffix}-Liste implementiert.
+Außerdem wurde auf RapidJSON\footnote{\url{https://github.com/miloyip/rapidjson}}
+zum schnellen Parsen der WAT-Metadaten, auf die \texttt{URI}-Klasse des
+POCO-Projektes\footnote{\url{http://pocoproject.org/}} und auf
+TCLAP\footnote{\url{http://tclap.sourceforge.net/}} für das CLI zurückgegriffen.
+
+Außerdem wurde das Test-Framework
+Catch\footnote{\url{https://github.com/philsquared/Catch}} für Unit-Tests der
+selbst geschriebenen Komponenten und für Integrationstests verwendet.
+
+\section{Hilfsmittel}
+
+Neben dem \texttt{meta-extractor} wurden noch einige Skripte u.\,a. zur
+Steuerung des Downloads und der Extraktion, dem Import in \texttt{MonetDB} und
+der Analyse in \texttt{R} geschrieben. Das erstgenannte ist etwas umfangreicher
+und daher neben dem Hauptprogramm auch Teil des
+Projektrepositories\footnote{\url{https://github.com/klemens/ALI-CC/}}.
+
+\section{Gesammelte Metadaten}
+\label{csv-data}
+
+Die in folgender Tabelle beschriebenen Metadaten wurden vom \texttt{meta-extractor}
+extrahiert und für die weiteren Analysen verwendet:
+
+\begin{center}
+\begin{tabular}{lcl}
+    \textbf{Name}  & \textbf{Datentyp} & \textbf{Beispiel} \\ \hline\hline
+    UUID           & uint128           & \textcolor{light-gray}{14a939f4-2355-11e5-b5f7-727283247c7f} \\ \hline
+    Zeitstempel    & string            & \textcolor{light-gray}{2015-07-06T11:03:18T} \\ \hline
+    Verwendung TLS & bool              & https ja/nein \\ \hline
+    Hostname       & string            & \textcolor{light-gray}{amazon.co.uk} \\ \hline
+    TLD            & string            & \textcolor{light-gray}{uk} \\ \hline
+    Public Suffix  & string            & \textcolor{light-gray}{co.uk} \\ \hline
+    Pfadtiefe      & uint8             & \textit{test/cool/cool.html} $\rightarrow$ \textcolor{light-gray}{3} \\ \hline
+    Pfadlänge      & uint16            & \textit{test/cool/cool.html} $\rightarrow$ \textcolor{light-gray}{19} \\ \hline
+    Server         & string            & \textcolor{light-gray}{apache}, \textcolor{light-gray}{nginx}, \dots \\ \hline
+    Kompression    & bool              & \textcolor{light-gray}{gzip}, \textcolor{light-gray}{deflate} in \textit{Content-Encoding} \\ \hline
+    Cookies        & bool              & \textit{Set-Cookie} vorhanden \\ \hline
+    MIME-Typ       & string            & \textcolor{light-gray}{text/html}, \textcolor{light-gray}{application/xml}, \dots\\ \hline
+    Charset        & string            & \textcolor{light-gray}{utf}, \textcolor{light-gray}{iso-8859}, \dots \\ \hline
+    Verwendung CDN & bool              & CDN ja/nein \\ \hline
+    Interne Links  & uint16            & Anzahl relative Links + gleicher Host \\ \hline
+    Externe Links  & uint16            & Anzahl ausgehende Links
+\end{tabular}
 \end{center}
 
-\section{Daten}
-\centering
-\resizebox{\textwidth}{!}{%
-    \begin{tabular}{lcl}
-        \textbf{Name}      & \textbf{Datentyp} & \textbf{Beispiel} \\ \hline\hline
-        UUID               & uint128           & \textcolor{light-gray}{14a939f4-2355-11e5-b5f7-727283247c7f} \\ \hline
-        Zeitstempel        & string            & \textcolor{light-gray}{2015-07-06T11:03:18T} \\ \hline
-        Verwendung TLS     & bool              & https ja/nein \\ \hline
-        Hostname           & string            & \textcolor{light-gray}{amazon.co.uk} \\ \hline
-        TLD                & string            & \textcolor{light-gray}{uk} \\ \hline
-        Public Suffix      & string            & \textcolor{light-gray}{co.uk} \\ \hline
-        Pfadtiefe          & uint8             & \textit{test/cool/cool.html} $\rightarrow$ \textcolor{light-gray}{3} \\ \hline
-        Pfadlänge          & uint16            & \textit{test/cool/cool.html} $\rightarrow$ \textcolor{light-gray}{19} \\ \hline
-        Server             & string            & \textcolor{light-gray}{apache}, \textcolor{light-gray}{nginx}, \dots \\ \hline
-        Kompression        & bool              & \textcolor{light-gray}{gzip}, \textcolor{light-gray}{deflate} in \textit{Content-Encoding} \\ \hline
-        Cookies            & bool              & \textit{Set-Cookie} vorhanden \\ \hline
-        MIME-Typ           & string            & \textcolor{light-gray}{text/html}, \textcolor{light-gray}{application/xml}, \dots\\ \hline
-        Charset            & string            & \textcolor{light-gray}{utf}, \textcolor{light-gray}{iso-8859}, \dots \\ \hline
-        Verwendung von CDN & bool              & CDN ja/nein \\ \hline
-        Interne Links      & uint16            & Anzahl relative Links + gleicher Host \\ \hline
-        Externe Links      & uint16            & Anzahl ausgehende Links
-    \end{tabular}
-}
 
 
 \chapter{Ergebnisse}
@@ -146,7 +205,7 @@ TODO...
 
 \section{TLS}
 \vspace{.1cm}
-\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_https}}
+%\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_https}}
 
 \section{Encoding}
 \vspace{.1cm}
