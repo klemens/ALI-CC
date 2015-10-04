@@ -42,39 +42,42 @@
 
 \section{Organisation}
 
-\begin{itemize}
-    \item Non-Profit Organisation
-    \item 2007 durch Gil Elbaz gegründet
-    \item Mitglieder stellen unentgeldlich Fachwissen und Zeit zur Verfügung
-\end{itemize}
-\textbf{``Our goal is to democratize the data so everyone, not just big companies, can do high quality research and analysis.''}
-\hfill-- \textit{Common Crawl Foundation}
+Der ``Common Crawl'' ist eine Non-Profit Organistation, welche 2007 von Gil Elbaz gegründet wurde.
+Ihre Mitglieder kommen aus den unterschiedlichsten Bereichen und stellen unentgeldlich Fachwissen und Zeit zur Verfügung.
 
-\begin{itemize}
-    \item (Fast) monatliche Crawls des Web und freie Bereitstellung der Datensätze
-    \item Letzter Crawl: 168 TB, 2,1 Mrd. Websites\footnote{\url{http://blog.commoncrawl.org/2015/05/april-2015-crawl-archive-available/} (Stand: Mai 2015)}
-    \item Viele Code-Beispiele zur Verarbeitung der Daten
-    \item Hosting gesponsert von AWS (Public Data Set),\\gesamt: 541 TB\footnote{\url{https://aws.amazon.com/datasets/41740}}
-\end{itemize}
+Das Ziel ist die ``Demokratisierung'' des Internets bzw. der enthaltenen Daten mit dem Kerngedanken, eine für jeden verfügbare Quelle von Internet-Crawls öffentlich bereitzustellen.
+Benutzern soll die Möglichkeit geboten werden, Internet-Crawls leicht und problemlos zu analysieren, ohne zuvor erst unter Aufwendung großer Kosten diese zu er-``crawlen''.
+\\
 
+\textbf{``Our goal is to democratize the data so everyone, not just big companies, can do high quality research and analysis.''\footnote{\url{http://commoncrawl.org/faqs/}}}
+%\textbf{``Our vision is of a truly open web that allows open access to information and enables greater innovation in research, business and education. We level the playing field by making wholesale extraction, transformation and analysis of web data cheap and easy.''}
+\\
+
+Es wird (fast) monatlich das Web gecrawlt und als Datensätze zur freien Verfügung bereitgestellt.
+Das Hosting wird seit 2012 als Teil des Programms der ``Public Data Sets'' durch die ``Amazon Web Services'' gesponsort\footnote{\url{https://aws.amazon.com/datasets/41740}}.
+Der letzte Crawl bestand z.\ B. aus 168 TB oder 2,1 Mrd. Websites\footnote{\url{http://blog.commoncrawl.org/2015/05/april-2015-crawl-archive-available/} (Stand: Mai 2015)}.
+Weiterhin werden für die Anregung zur Mitarbeit und leichten Einarbeitung viele Code-Beispiele gepflegt, so z.\ B. die Verarbeitung der Daten mittels Hadoop.
 
 \section{Technik}
 
+Das Crawling geschieht mit dem \texttt{CCBot}, der auf einer modifizierten Version des Apache Nutch 1.7 basiert.
+Es wird verteilt gecrawlt unter Verwendung vieler Techniken, z.\ B. \texttt{Lucene} und \texttt{Solar} zur Indizierung und \texttt{Hadoop} zu Verarbeitung und Extraktion von Crawling-Kandidaten.
+
+Natürlich wird auch darauf geachtet, dass der Crawler keine unnötige Last für die Web-Server verursacht.
+Hier werden verschiedene Algorithmen zur Lastverteilung verwendet.
+Weiterhin identifiziert sich der Crawler über einen eigenen \texttt{User-Agent} und IP-Bereich.
+Zusätzlich können in der \texttt{robots.txt} verschiedene Einstellung zum Crawling-Verhalten getroffen werden, sogar ein komplettes Blocken des Crawlers ist möglich.
+
+Damit lässt sich der Crawler als ein sehr ``freundlichen Crawler'' beschreiben.
+\\
+
+Die Speicherung der Crawls erfolgt in dem \texttt{WARC}-Format (Web ARChive).
+Hierbei werden 3 verschiedene Datensätze erzeugt:
+
 \begin{itemize}
-    \item CCBot: modifizierter Apache Nutch 1.7
-        \begin{itemize}
-            \item Basiert auf Lucene, Solr und Hadoop
-            \item Verteiltes Crawling bei AWS
-            \item „Freundlicher Crawler“: beachtet robots.txt und erzeugt so wenig Last wie möglich
-        \end{itemize}
-    \item Speicherung im WARC-Format (Web ARChive)
-    \item Drei verschiedene Ergebnisse
-        \begin{itemize}
-            \item WARC: Enthält komplette HTTP Konversationen getrennt nach
-                Anfrage und Antwort (Records)
-            \item WAT: Metadaten für jeden Record
-            \item WET: Reintext-Extrakt der Antworten
-        \end{itemize}
+    \item WARC: Enthält komplette HTTP Konversationen getrennt nach Anfrage und Antwort (Records)
+    \item WAT: Metadaten für jeden Record
+    \item WET: Reintext-Extrakt der Antworten
 \end{itemize}
 
 
