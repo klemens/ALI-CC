@@ -181,6 +181,7 @@ extrahiert und für die weiteren Analysen verwendet:
 
 
 \chapter{Ergebnisse}
+\label{Ergebnisse}
 
 \section{TLD}
 \vspace{.1cm}
@@ -217,6 +218,32 @@ extrahiert und für die weiteren Analysen verwendet:
 \section{Server}
 \vspace{.1cm}
 \makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_server}}
+
+
+\chapter{Auswertung \& Resümee}
+
+Wie im Abschnitt \ref{Ergebnisse} zu sehen ist, werden größtenteils ``com''-Domains gecrawlt. Dies lässt sich mit hoher Wahrscheinlichkeit auf diee \texttt{Seed}-Liste zurückführen.
+
+\begin{itemize}
+    \item \texttt{com}-Domains $\rightarrow$ Seed-Liste $\rightarrow$ Wikipedia, Sport, Travel, ...
+    \item \texttt{de}-Domain höchstens über Verlinkung, z.\ B. durch Flug- / Reiseunternehmen, Sport etc. $\rightarrow$ weniger für Deutsches Web geeignet / Ersatz des eigenen Crawlens
+    \item Common Crawl vs. Google - Google mehr breitgefächert, jedoch nicht so leicht exakt zu vergleichen
+    \item Public Suffix, ähnlich zu Toplevel-Domains $\rightarrow$ da \texttt{blogspot.com} vor \texttt{de}, wirklich mehr amerikanische Domains?
+\end{itemize}
+\vspace{.1cm}
+\begin{itemize}
+    \item MIME-Type, größtenteils \texttt{text/html} $\rightarrow$ Crawls gut für Textverarbeitung, da wenig Müll (Bilder, Medien etc.)
+    \item Encoding, größtenteils \texttt{UTFxx} (\textgreater\ 70 \%), scheinbar gut automatisch über HEADER erkennbar? (extra Studie mit Textextraktion evtl. notwendig)
+    \item Rein-Text-Extraktion? (Readability.js gut für Artikel, jWarcEx?, CC?, nur Headlines?)
+    \item 
+\end{itemize}
+\vspace{.1cm}
+\begin{itemize}
+    \item Serververteilung, aus Interesse, nur für bestimmte Analyse
+    \item lassen sich teilweise recht gut Serverversionen und verwendete Module bestimmen, z.\ B. für Sicherheitslücken; jedoch sehr stark vom Serveradministrator abhängig, was gesendet
+    \item für bestimmte Analysen, mitgesendete HEADER recht interessant
+    \item 
+\end{itemize}
 
 
 \chapter{Textextraktion}
