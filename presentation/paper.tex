@@ -175,7 +175,6 @@ extrahiert und für die weiteren Analysen verwendet:
 
 \chapter{Ergebnisse}
 
-
 \section{TLD}
 
 \begin{center}
@@ -257,6 +256,19 @@ Außerdem zeigt sich hier abermals, dass asiatische Seiten stark unterrepräsent
 \noindent
 Bei den verwendeten Webservern herrscht eine große Vielfalt (vlg. den großen \texttt{other}-Anteil), die von den beiden großen freien Webservern Apache und nginx angeführt wird.
 
+\section{Verschlüsselung, Cookies und Kompression}
+
+\begin{center}
+    \includegraphics[trim=0 2cm 0 .5cm, clip=true, width=\textwidth]{plots/plot_boolean_pie}
+\end{center}
+
+\noindent
+Mehr als 7\% der von Common Crawl gecrawlten Seiten verwenden HTTPS zur verschlüsselten Übertragung der Inhalte. Dies zeigt eindrucksvoll den seit ca. 4 Jahren anhaltenden Trend zur Verschlüsselung: 2011 lag der Anteil der verschlüsselten Seiten noch weit unter 1\%\footnote{%
+\url{http://www.sistrix.de/news/anteil-von-ssl-treffern-google-serps/}}.
+
+Im Gegensatz dazu versuchen mehr als zwei Drittel aller Seiten beim Besucher mindestens einen Cookie zu setzen. Es wurde hier jedoch nicht zwischen Session-Cookies und persistenten Cookies unterschieden.
+
+Geringfügig weniger Seiten werden komprimiert (dh. mit \texttt{gzip} oder \texttt{deflate}) zum Browser übertragen.
 
 
 \chapter{Textextraktion}
