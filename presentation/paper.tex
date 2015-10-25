@@ -273,139 +273,190 @@ Geringfügig weniger Seiten werden komprimiert (dh. mit \texttt{gzip} oder \text
 
 \chapter{Textextraktion}
 
-\centering{
-    \includegraphics[trim=0 105px 0 0, clip=true, width=.9\textwidth]{images/guardian-website}
-}
+In diesem Abschnitt vergleichen wir die Qualität der Textextraktion von Common Crawl mit dem an der Abteilung für Automatische Sprachverarbeitung der Universität Leipzig entwickelten Tool jWarcEx und Readability.js, das von Mozilla für die Lesenansicht im Firefox-Browser verwendet wird.
 
-\scriptsize
-\vspace{.1cm}
-\url{http://www.theguardian.com/world/2013/jun/09/edward-snowden-nsa-whistleblower-surveillance}
+Da wir uns bei der Analyse wie oben beschrieben auf die Metadaten beschränken mussten, erfolgte die Analyse stichprobenartig anhand einiger Beispiele, wovon im Folgenden zwei näher erläutert werden.
 
-\scriptsize
-Edward Snowden: the whistleblower behind the NSA surveillance revelations $|$ US news $|$ The Guardian
+\section{Beispiel: theguardian.com}
 
-\section{jWarcEx}
+Das erste Beispiel ist der erste Artikel von Glenn Greenwald, Ewen MacAskill und Laura Poitras über Edward Snowden auf \texttt{theguardian.com}\footnote{\url{http://www.theguardian.com/world/2013/jun/09/edward-snowden-nsa-whistleblower-surveillance}}:
 
-\begin{lstlisting}[breaklines=true]
-Skip to main content
+\begin{center}
+    \includegraphics[trim=0 130px 0 0, clip=true, width=.8\textwidth]{images/guardian-website}
+\end{center}
 
-browse all sections close
+\noindent
+Common Crawl und jWarcEx extrahieren in diesem Fall den exakt gleichen Text, der im Wesentlichen der DOM-Eigenschaft \texttt{textContent} entspricht und z.\,B. auch Elemente der Seitennavigation und Alternativtexte von Medien (vlg. Hinweis zum Video) enthält.
 
-Glenn Greenwald on security and liberty
+Readability.js extrahiert dagegen exakt den Text des Artikel. Die Überschrift und die Autoren werden aus den entsprechenden HTML-Meta-Tags entnommen, wobei hier fälschlicherweise nur das letzte author-Tag beachtet wird.
 
-Edward Snowden: the whistleblower behind the NSA surveillance revelations
+\begin{minipage}[t]{.5\textwidth}
+    \centering{\textbf{Common Crawl / jWarcEx}}
+    \vspace{.5cm}
+    \scriptsize
+    \begin{lstlisting}[breaklines=true]
+    Skip to main content
 
-The 29-year-old source behind the biggest intelligence leak in the NSA's history explains his motives, his uncertain future and why he never intended on hiding in the shadows
+    browse all sections close
 
-Q\&A with NSA whistleblower Edward Snowden: ``I do not expect to see home again''
+    Glenn Greenwald on security and liberty
 
-Glenn Greenwald, Ewen MacAskill and Laura Poitras in Hong Kong
+    Edward Snowden: the whistleblower behind the NSA surveillance revelations
 
-Tuesday 11 June 2013 09.00 EDT Last modified on Saturday 4 October 2014 10.54 EDT
+    The 29-year-old source behind the biggest intelligence leak in the NSA's history explains his motives, his uncertain future and why he never intended on hiding in the shadows
 
-Sorry, your browser is unable to play this video.
+    Q\&A with NSA whistleblower Edward Snowden: ``I do not expect to see home again''
 
-The individual responsible for one of the most significant leaks in US political history is Edward Snowden, a 29-year-old former technical assistant for the CIA and current employee of the defence contractor Booz Allen Hamilton. Snowden has been working at the National Security Agency for the last four years as an employee of various outside contractors, including Booz Allen and Dell.
+    Glenn Greenwald, Ewen MacAskill and Laura Poitras in Hong Kong
 
-The Guardian, after several days of interviews, is revealing his identity at his request. From the moment he decided to disclose numerous top-secret documents to the public, he was determined not to opt for the protection of anonymity. ``I have no intention of hiding who I am because I know I have done nothing wrong,'' he said.
+    Tuesday 11 June 2013 09.00 EDT Last modified on Saturday 4 October 2014 10.54 EDT
 
-(...)
-\end{lstlisting}
+    Sorry, your browser is unable to play this video.
 
-\section{Mozilla Readability.js}
+    The individual responsible for one of the most significant leaks in US political history is Edward Snowden, a 29-year-old former technical assistant for the CIA and current employee of the defence contractor Booz Allen Hamilton. Snowden has been working at the National Security Agency for the last four years as an employee of various outside contractors, including Booz Allen and Dell.
 
-\begin{lstlisting}[breaklines=true]
-Edward Snowden: the whistleblower behind the NSA surveillance revelations
+    The Guardian, after several days of interviews, is revealing his identity at his request. From the moment he decided to disclose numerous top-secret documents to the public, he was determined not to opt for the protection of anonymity. "I have no intention of hiding who I am because I know I have done nothing wrong," he said.
 
-Laura Poitras
+    (...)
+    \end{lstlisting}
+\end{minipage}%
+\begin{minipage}[t]{.5\textwidth}
+    \centering{\textbf{Readability.js}}
+    \vspace{.5cm}
+    \scriptsize
+    \begin{lstlisting}[breaklines=true]
 
-The individual responsible for one of the most significant leaks in US political history is Edward Snowden, a 29-year-old former technical assistant for the CIA and current employee of the defence contractor Booz Allen Hamilton. Snowden has been working at the National Security Agency for the last four years as an employee of various outside contractors, including Booz Allen and Dell.
 
-The Guardian, after several days of interviews, is revealing his identity at his request. From the moment he decided to disclose numerous top-secret documents to the public, he was determined not to opt for the protection of anonymity. ``I have no intention of hiding who I am because I know I have done nothing wrong,'' he said.
 
-(...)
-\end{lstlisting}
 
-\section{Common Crawl}
 
-\begin{lstlisting}[breaklines=true]
-Lance Armstrong, Tour de France champ, retires | abc7.com
 
-GO
+    Edward Snowden: the whistleblower behind the NSA surveillance revelations
 
-Personalize your weather by entering a location.
 
-Sorry, but the location you entered was not found. Please try again.
 
-Sections
 
-Traffic
 
-Video
 
-Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
 
-Home
 
-Accuweather
 
-Traffic
 
-Video
+    Laura Poitras
 
-Photos
 
-Mobile Apps
 
-Local News Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
 
-Map My News
 
-Shows Live Well Network
 
-Follow Us
 
-BREAKING NEWS
 
-(...)
-\end{lstlisting}
 
-\vspace{.2cm}
-\url{http://abc7.com/archive/7962461}
+    The individual responsible for one of the most significant leaks in US political history is Edward Snowden, a 29-year-old former technical assistant for the CIA and current employee of the defence contractor Booz Allen Hamilton. Snowden has been working at the National Security Agency for the last four years as an employee of various outside contractors, including Booz Allen and Dell.
 
-\section{jWarcEx}
+    The Guardian, after several days of interviews, is revealing his identity at his request. From the moment he decided to disclose numerous top-secret documents to the public, he was determined not to opt for the protection of anonymity. "I have no intention of hiding who I am because I know I have done nothing wrong," he said.
 
-\begin{lstlisting}[breaklines=true]
-Personalize your weather by entering a location.
+    (...)
+    \end{lstlisting}
+\end{minipage}
 
-Sorry, but the location you entered was not found. Please try again.
+\section{Beispiel: abc7.com}
 
-\vspace{.2cm}
-Sections Traffic Video Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
+Unterschiede zwischen der Textextraktion von Common Crawl und jWarcEx zeigen sich z.\,B. an einem Artikel über das Karriereende von Lance Armstrong auf \texttt{abc7.com}\footnote{\url{http://abc7.com/archive/7962461}}.
 
-Home Accuweather Traffic Video Photos Mobile Apps
+So erkennt jWarcEx die zu einem Menüpunkt gehörenden Unterpunkte und fasst diese zusammen, während Common Crawl damit teilweise Probleme hat. Außerdem fügt Common Crawl manchmal den Seitentitel an den Anfang des Extraktes hinzu.
 
-Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
+\vspace{.5cm}
+\begin{minipage}[t]{.5\textwidth}
+    \centering{\textbf{Common Crawl}}
+    \vspace{.5cm}
+    \scriptsize
+    \begin{lstlisting}[breaklines=true]
+    Lance Armstrong, Tour de France champ, retires | abc7.com
 
-\quad BREAKING NEWS ABC shows live and on-demand -- Download the WATCH ABC app!
+    GO
 
-\vspace{.2cm}
-Lance Armstrong, Tour de France champ, retires
+    Personalize your weather by entering a location.
 
-Seven-time Tour de France champion Lance Armstrong is retiring. He ends his career amidst a federal doping investigation.
+    Sorry, but the location you entered was not found. Please try again.
 
-February 16, 2011 12:00:00 AM PST
+    Sections
 
-Seven-time Tour de France champion Lance Armstrong said he's retiring from the professional cycling circuit, this time for good. The 39-year-old is calling it ``Retirement 2.0'' and is making it clear there is no reset button this time.
+    Traffic
 
-\vspace{.2cm}
-He says he wants to spend more time with his children and dedicate himself even more to the fight against cancer with his "Livestrong" Foundation.
+    Video
 
-(...)
-\end{lstlisting}
+    Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
 
-\vspace{.2cm}
-\url{http://abc7.com/archive/7962461}
+    Home
 
+    Accuweather
+
+    Traffic
+
+    Video
+
+    Photos
+
+    Mobile Apps
+
+    Local News Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
+
+    Map My News
+
+    Shows Live Well Network
+
+    Follow Us
+
+    BREAKING NEWS
+
+    (...)
+    \end{lstlisting}
+\end{minipage}%
+\begin{minipage}[t]{.5\textwidth}
+    \centering{\textbf{jWarcEx}}
+    \vspace{.5cm}
+    \scriptsize
+    \begin{lstlisting}[breaklines=true]
+
+
+
+
+
+    Personalize your weather by entering a location.
+
+    Sorry, but the location you entered was not found. Please try again.
+
+    Sections Traffic Video Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
+
+
+
+
+
+
+    Home Accuweather Traffic Video Photos Mobile Apps
+
+
+
+
+
+
+
+
+
+
+    Los AngelesOrange CountyInland EmpireVentura CountyCalifornia
+
+
+
+
+
+
+
+    BREAKING NEWS ABC shows live and on-demand -- Download the WATCH ABC app!
+
+    (...)
+    \end{lstlisting}
+\end{minipage}
 
 \end{document}
