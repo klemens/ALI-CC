@@ -40,55 +40,36 @@
 
 \chapter{Common Crawl}
 
-\section{Organisation}
-
-\begin{itemize}
-    \item Non-Profit Organisation
-    \item 2007 durch Gil Elbaz gegründet
-    \item Mitglieder stellen unentgeldlich Fachwissen und Zeit zur Verfügung
-\end{itemize}
 \textbf{``Our goal is to democratize the data so everyone, not just big companies, can do high quality research and analysis.''}
 \hfill-- \textit{Common Crawl Foundation}
 
-\begin{itemize}
-    \item (Fast) monatliche Crawls des Web und freie Bereitstellung der Datensätze
-    \item Letzter Crawl: 168 TB, 2,1 Mrd. Websites\footnote{\url{http://blog.commoncrawl.org/2015/05/april-2015-crawl-archive-available/} (Stand: Mai 2015)}
-    \item Viele Code-Beispiele zur Verarbeitung der Daten
-    \item Hosting gesponsert von AWS (Public Data Set),\\gesamt: 541 TB\footnote{\url{https://aws.amazon.com/datasets/41740}}
-\end{itemize}
+\section{Organisation}
 
+Common Crawl ist eine 2007 durch Gil Elbaz gegründete gemeinnützige Organisation mit dem Ziel, Wissenschaftlern, Firmen und Privatpersonen kostenlos eine Kopie des Internets zu Forschungs- und Analysezwecken zur Verfügung zu stellen\footnote{\url{https://commoncrawl.org/faqs/}}.
+
+Dazu wird monatlich ein Crawl erstellt, der anschließend in einem AWS Public Data Set\footnote{\url{https://aws.amazon.com/datasets/41740}} von Amazon kostenfrei gespeichert wird. Dies ermöglicht die direkte Analyse in AWS, aber auch den freien Download über HTTP.
+
+Die Organisation hat zur Zeit 25 Mitglieder, wobei die Mehrzahl Fachwissen und Zeit unentgeltlich zur Verfügung stellen.
 
 \section{Technik}
 
-\begin{itemize}
-    \item CCBot: modifizierter Apache Nutch 1.7
-        \begin{itemize}
-            \item Basiert auf Lucene, Solr und Hadoop
-            \item Verteiltes Crawling bei AWS
-            \item „Freundlicher Crawler“: beachtet robots.txt und erzeugt so wenig Last wie möglich
-        \end{itemize}
-    \item Speicherung im WARC-Format (Web ARChive)
-    \item Drei verschiedene Ergebnisse
-        \begin{itemize}
-            \item WARC: Enthält komplette HTTP Konversationen getrennt nach
-                Anfrage und Antwort (Records)
-            \item WAT: Metadaten für jeden Record
-            \item WET: Reintext-Extrakt der Antworten
-        \end{itemize}
-\end{itemize}
+Common Crawl verwendet für das Crawlen den CCBot, einen modifizierten Apache Nutch 1.7, welcher wiederum auf Lucene, Solr und Hadoop basiert. Das Crawlen findet verteilt in AWS statt. Der CCBot beachtet die \texttt{robots.txt} und versucht durch einen ausgeklügelten Algorithmus so wenig Last wie möglich auf den einzelnen Webservern zu verursachen.
+
+Zur Speicherung der Crawls wird das Web Archive-Format (WARC) verwendet, das in ISO 28500\footnote{\url{http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf}} spezifiziert und an HTTP angelehnt ist. Eine WARC-Datei besteht aus mehreren einzelnen WARC-Records, wobei ein WARC-Record einen beliebigen Payload haben kann (z.\,B. HTTP oder JSON).
+
+Während des Craws werden drei verschiedene Ergebnisse erzeugt: Zuerst der Crawl an sich mit den kompletten HTTP-Konversationen, wobei Anfrage und Antwort als getrennte WARC-Records abgespeichert werden. Zusätzlich wird für jedem WARC-Record ein JSON-Metadaten-Record\footnote{\url{https://gist.github.com/Smerity/e750f0ef0ab9aa366558\#file-bbc-pretty-wat}} (WAT) erzeugt, der u.\,a. die kompletten HTTP-Header sowie eine Liste aller auf der Seite vorkommenden Links (inklusive der eingebundenen CSS/JavaScript-Dateien) enthält. Schließlich wird für jede HTTP-Antwort auch ein Reintext-Record (WET) erzeugt, der den automatisch aus dem HTML-Quelltext extrahierten Text enthält.
 
 
 \chapter{Analyse}
 
 Die Analyse erfolgte anhand des Crawls vom April 2015, des zum Zeitpunkt des
-Vortrages aktuellsten Crawls. Der komplette Crawl besitzt eine Größe von über
-168 TB\footnote{\url{http://blog.commoncrawl.org/2015/05/april-2015-crawl-archive-available/}}.
+Vortrages aktuellsten Crawls. Der komplette Crawl besitzt eine Größe von 168 TB und beinhaltet 2,1 Milliarden Webseiten\footnote{\url{http://blog.commoncrawl.org/2015/05/april-2015-crawl-archive-available/}}.
 Da eine Bearbeitung dieser Datenmenge auf eigenen Servern aufgrund von
 Bandbreitenbeschränkungen und eine Bearbeitung in AWS mit Hilfe von EC2-Instanzen
 aufgrund von finanziellen Einschränkungen nicht möglich war, haben wir unsere
 Analyse auf die WAT-Dateien beschränkt, die aus knapp 39000 Dateien zu
 durchschnittlich je 315 MiB bestehen und damit zusammen nur rund 12 TB groß sind.
-Davon konnten wir bis zum Vortrag ca. 53 \% analysieren.
+Davon konnten wir ca. 53 \% analysieren.
 
 \section{Übersicht}
 
@@ -175,7 +156,7 @@ extrahiert und für die weiteren Analysen verwendet:
 
 \chapter{Ergebnisse}
 
-\section{TLD}
+\section{Top-Level-Domain}
 
 \begin{center}
     \includegraphics[width=0.9\textwidth]{plots/plot_tld_top10}
