@@ -234,26 +234,29 @@ Es werden fast ausschließlich HTML-Textdaten gecrawlt, was den Erwartungen ents
 
 Da die eigentlichen Daten nicht analysiert wurden und die HTTP-Header möglicherweise nicht immer korrekt sind (z.\,B. falsch konfigurierter Webserver), sollten diese Daten kritisch gesehen werden.
 
-
 % prevent wrapfigure from floating into next pages
 \clearpage
 
-\section{TLS}
-\vspace{.1cm}
-\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_https}}
-Der überwiegende Anteil an Websites, welche gecrawlt werden, sind unverschlüsselt.
+\section{Zeichenkodierung}
 
+\begin{center}
+    \includegraphics[width=.78\textwidth]{plots/plot_charset}
+\end{center}
 
+\noindent
+Während ca. 16\% aller Seiten noch die regionsspezifischen Zeichenkodierungen des ISO-8859-Standards benutzen, setzt die große Mehrheit inzwischen auf Unicode.
 
-\section{Encoding}
-\vspace{.1cm}
-\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_charset}}
+Außerdem zeigt sich hier abermals, dass asiatische Seiten stark unterrepräsentiert sind, da die dort immer noch verwendeten Zeichenkodierungen wie die des JIS-Standards oder die Big5-Zeichenkodierung (im Graph nach Ländern gruppiert) quasi nicht auftreten.
 
-Das Encoding gibt erste Hinweise darauf, welche Zeichen auf den Websites verwendet werden. Die Mehrheit an gecrawlten Websites benutzt ein utf- oder iso-8859 Encoding. TODO
+\section{Webserver}
 
-\section{Server}
-\vspace{.1cm}
-\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_server}}
+\begin{center}
+    \includegraphics[width=.78\textwidth]{plots/plot_server}
+\end{center}
+
+\noindent
+Bei den verwendeten Webservern herrscht eine große Vielfalt (vlg. den großen \texttt{other}-Anteil), die von den beiden großen freien Webservern Apache und nginx angeführt wird.
+
 
 
 \chapter{Textextraktion}
