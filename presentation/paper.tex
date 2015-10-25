@@ -177,33 +177,52 @@ extrahiert und für die weiteren Analysen verwendet:
 
 
 \section{TLD}
-\vspace{.1cm}
-\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_tld_top10}}
-Die TLD .com, die vor allem von kommerziellen Unternehmen genutzt wird, ist mit über 70\% mit Abstand am meisten vertreten. Danach folgen die eher von nicht-kommerziellen Organisationen benutzten TLD's .org, .edu, .net und .gov. Zusammen stellen Sie ungefähr 18\%. Dann folgen länderspezifische TLD's, wobei europäische und englischsprachige Länder den überwiegenden Anteil stellen (unter den Top 10 sind .de (Deutschland), .au (Australien), .ca (Kanada) und .fr (Frankreich)).
-Grundsätzlich scheinen die TLD's zipfverteilt.
 
+\begin{center}
+    \includegraphics[width=0.9\textwidth]{plots/plot_tld_top10}
+\end{center}
 
-\vspace{.1cm}
-\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_tld}}
+\noindent
+Die TLD .com, die vor allem von kommerziellen Unternehmen genutzt wird, ist mit über 70\% mit Abstand am meisten vertreten. Danach folgt die eher von nicht-kommerziellen Organisationen benutzte .org.
 
-\vspace{.4cm}
-\makebox[\textwidth][c]{\includegraphics[width=\textwidth]{images/selection_bias}}
+\begin{wrapfigure}{r}{.63\textwidth}
+    \label{wrap-fig:2}
+    \includegraphics[width=.63\textwidth]{plots/plot_tld_zipf}
+\end{wrapfigure}
 
-Die vom Common Crawl erfassten Seiten stellen eine nicht randomisierte Stichprobe aus der Gesamtheit aller Websites dar. Daher unterliegen die Ergebnisse einer statistischen Verzerrung im Vergleich zur wahren Verteilung der Grundgesamtheit aller Websites, dem Selection Bias. Um abzuschätzen, in wie weit die Auswahl von Websites durch den Common Crawl Prozess im Vergleich zu einer randomisierten Auswahl verzerrt ist, vergleichen wir die Verteilung der TLD's mit Daten von Google. Auch diese Daten unterliegen natürlich dem Selection Bias, haben aber eine größere Stichprobengröße und deutliche Unterschiede in der Verteilung der TLD's können uns aufzeigen, welche TLD's vom Common Crawl eher erfasst bzw. nicht erfasst werden. So zeigt sich, dass asiatische TLD's unterrepräsentiert sind (bspw. Südkorea .kr). Auch sind typische TLD's von Websites für Medienstreaming unterrepräsentiert, wie .tv und .fm. Überrepräsentiert sind dafür .com, .edu und .net.
+Mit .edu und .gov befinden sich zwei TLDs unter den Top-5, die primär von US-amerikanischen Bildungs- und Regierungsorganisationen verwendet werden. Anschließend folgen länderspezifische TLDs, wobei englischsprachige und europäische Länder den überwiegenden Anteil stellen.
 
-Dies ist ein Hinweis darauf, dass vor allem Websites kommerzieller Organisationen (.com) und offizieller Stellen (.edu, .gov) gecrawlt werden, während Websites mit vielem nicht-textualen Inhalt (.tv oder .fm) nicht gecrawlt werden.
+Grundsätzlich scheinen die TLDs näherungsweise zipfverteilt zu sein.
 
-\vspace{.1cm}
-\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_tld_comparison}}
+% prevent wrapfigure from floating into next pages
+\clearpage
+
+\begin{wrapfigure}{r}{.45\textwidth}
+    \label{wrap-fig:3}
+    \def\svgwidth{.45\textwidth}
+    \input{images/selection_bias_clean.pdf_tex}
+\end{wrapfigure}
+
+Die vom Common Crawl erfassten Seiten stellen eine nicht randomisierte Stichprobe aus der Gesamtheit aller Websites dar. Daher unterliegen die Ergebnisse einer statistischen Verzerrung im Vergleich zur wahren Verteilung der Grundgesamtheit aller Websites, dem Selection Bias. Um abzuschätzen, in wie weit die Auswahl von Websites durch den Common Crawl Prozess im Vergleich zu einer randomisierten Auswahl verzerrt ist, vergleichen wir die Verteilung der TLDs mit Daten von Google. Auch diese Daten unterliegen natürlich dem Selection Bias, haben aber eine größere Stichprobengröße.
+
+Da Google selbst keine offiziellen Statistiken über die erfassten TLD bereitstellt, wurden die Daten über eine speziell formulierte Suchanfrage der Form \texttt{site:.com} erhoben. Dies liefert alle Seiten, die in Ihrer Domain den String .com enthalten, was näherungsweise alle Seiten der TLD .com sind. Auf diese Weise wurden die Trefferzahlen der 61 häufigsten Domains ermittelt und in Relation zueinander gesetzt. Aufgrund der nicht vollständigen Abdeckung aller TLDs sind die relativen Anteile geringfügig zu hoch.
+
+\begin{center}
+    \includegraphics[width=.9\textwidth]{plots/plot_tld_comparison}
+\end{center}
+
+Es zeigt sich, dass mit Ausnahme englischsprachiger Länder (besonders asiatische) länderspezifische TLDs stark unterrepräsentiert sind (z.\,B. Südkorea .kr), während amerikanische TLDs (.edu, .gov) und die kommerzielle TLD .com stark überrepräsentiert sind. Typische TLDs von Websites für Medienstreaming (z.\,B. .tv und .fm) sind ebenfalls unterrepräsentiert.
 
 \section{Public Suffix}
-\vspace{.1cm}
-\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_pub_suffixes_top10}}
 
-\vspace{.1cm}
-\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_pub_suffixes}}
+\begin{center}
+    \includegraphics[width=.9\textwidth]{plots/plot_pub_suffixes_top50}
+\end{center}
 
-Wie zu erwarten war, zeigt sich bei den Public Suffixes ein ähnliches Bild wie bei den TLD's. Es fällt jedoch der recht hohe Anteil an blogspot.com Seiten auf. Ebenfalls erscheinen zuerst co.uk und com.au in der Liste, welche hauptsächlich von kommerziellen Organisationen verwendet werden, was die Vermutung aus dem vorherigen Kapitel bestärkt.
+\noindent
+Wie zu erwarten zeigt sich bei den Public Suffixes ein ähnliches Bild wie bei den TLDs. Ein extremer Ausreißer ist der Blog-Dienst blogger.com mit seinen auf blogspot.com gehosteten Blogs.
+
+Außerdem erscheinen nun z.\,B. .co.uk, .org.uk, etc. weit vor .uk (nicht im Graph), da die Registrierung von Domains direkt unter .uk erst seit kurzem erlaubt und damit noch nicht weit verbreitet ist.
 
 \section{Mime-Type}
 \vspace{.1cm}
