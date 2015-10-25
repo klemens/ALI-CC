@@ -225,10 +225,18 @@ Wie zu erwarten zeigt sich bei den Public Suffixes ein ähnliches Bild wie bei d
 Außerdem erscheinen nun z.\,B. .co.uk, .org.uk, etc. weit vor .uk (nicht im Graph), da die Registrierung von Domains direkt unter .uk erst seit kurzem erlaubt und damit noch nicht weit verbreitet ist.
 
 \section{Mime-Type}
-\vspace{.1cm}
-\makebox[\textwidth][c]{\includegraphics[width=1.1\textwidth]{plots/plot_mime}}
 
-Es werden fast ausschließlich HTML/XML-Textdaten gecrawlt, was den Erwartungen entspricht.
+\begin{wrapfigure}{r}{.6\textwidth}
+    \includegraphics[width=.6\textwidth]{plots/plot_mime}
+\end{wrapfigure}
+
+Es werden fast ausschließlich HTML-Textdaten gecrawlt, was den Erwartungen entspricht. Andere typische gecrawlte Typen sind Bilder, PDFs, Feeds und Kalender.
+
+Da die eigentlichen Daten nicht analysiert wurden und die HTTP-Header möglicherweise nicht immer korrekt sind (z.\,B. falsch konfigurierter Webserver), sollten diese Daten kritisch gesehen werden.
+
+
+% prevent wrapfigure from floating into next pages
+\clearpage
 
 \section{TLS}
 \vspace{.1cm}
