@@ -273,12 +273,12 @@ Geringfügig weniger Seiten werden komprimiert (dh. mit \texttt{gzip} oder \text
 \section{Links}
 
 \makebox[\textwidth][c] {
-\includegraphics[width=0.39\textwidth, keepaspectratio=true]{plots/plot_links.pdf}%
-\includegraphics[width=0.39\textwidth, keepaspectratio=true]{plots/plot_links_internal.pdf}%
-\includegraphics[width=0.39\textwidth, keepaspectratio=true]{plots/plot_links_external.pdf}
+\includegraphics[trim=0 0 3.5cm 0, clip=true, width=0.39\textwidth, keepaspectratio=true]{plots/plot_links.pdf}%
+\includegraphics[trim=0 0 3.5cm 0, clip=true, width=0.39\textwidth, keepaspectratio=true]{plots/plot_links_internal.pdf}%
+\includegraphics[trim=0 0 3.5cm 0, clip=true, width=0.39\textwidth, keepaspectratio=true]{plots/plot_links_external.pdf}
 }
-\centerline{Seiten mit den meisten (links), meisten internen (mitte) und meisten externen (rechts) Links}
-\vspace{0cm}
+\centerline{Seiten mit den meisten (links), meisten internen (mitte, rot) und meisten externen (rechts, blau) Links}
+\vspace{-.2cm}
 
 Um die Reichweite des Crawls genauer zu beleuchten, betrachten wir die Verteilung und Art der Links, die auf den Seiten gefunden werden. Dabei unterscheiden wir zwischen internen Links, d.h. solche mit einem relativen Pfad bzw. mit dem gleichen Hostnamen als Ziel, und externe Links. In Bezug auf Reichweite sind besonders externe Links interessant, da nur durch diese neue Seiten von anderen Hosts in den Cralw mit einbezogen werden.
 
