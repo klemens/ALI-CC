@@ -259,7 +259,7 @@ Bei den verwendeten Webservern herrscht eine große Vielfalt (vlg. den großen \
 \section{Verschlüsselung, Cookies und Kompression}
 
 \begin{center}
-    \includegraphics[trim=0 2cm 0 .5cm, clip=true, width=\textwidth]{plots/plot_boolean_pie}
+    \includegraphics[trim=0 2cm 0 .5cm, clip=true, width=.9\textwidth]{plots/plot_boolean_pie}
 \end{center}
 
 \noindent
@@ -270,6 +270,19 @@ Im Gegensatz dazu versuchen mehr als zwei Drittel aller Seiten beim Besucher min
 
 Geringfügig weniger Seiten werden komprimiert (dh. mit \texttt{gzip} oder \texttt{deflate}) zum Browser übertragen.
 
+\section{Links}
+
+\makebox[\textwidth][c] {
+\includegraphics[width=0.39\textwidth, keepaspectratio=true]{plots/plot_links.pdf}%
+\includegraphics[width=0.39\textwidth, keepaspectratio=true]{plots/plot_links_internal.pdf}%
+\includegraphics[width=0.39\textwidth, keepaspectratio=true]{plots/plot_links_external.pdf}
+}
+\centerline{Seiten mit den meisten (links), meisten internen (mitte) und meisten externen (rechts) Links}
+\vspace{0cm}
+
+Um die Reichweite des Crawls genauer zu beleuchten, betrachten wir die Verteilung und Art der Links, die auf den Seiten gefunden werden. Dabei unterscheiden wir zwischen internen Links, d.h. solche mit einem relativen Pfad bzw. mit dem gleichen Hostnamen als Ziel, und externe Links. In Bezug auf Reichweite sind besonders externe Links interessant, da nur durch diese neue Seiten von anderen Hosts in den Cralw mit einbezogen werden.
+
+Von allen Seiten enthalten etwa 84\% Links und 67\% externe Links. Ungefähr 18\% aller Links sind extern, der Rest verlinkt intern. Seiten mit sehr vielen externen/internen Links enthalten jedoch nahezu ausschließlich Links des selben Typs, die Verteilung ist eher asymmetrisch.
 
 \chapter{Textextraktion}
 
