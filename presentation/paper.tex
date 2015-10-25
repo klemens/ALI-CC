@@ -22,7 +22,7 @@
 \titlehead{Seminar: Anwendungen Linguistische Informatik \hfill Vortrag am 06.07.2015}
 \title{\vspace{3cm}Common Crawl}
 \subtitle{Analyse des Crawling-Prozesses und der Textextraktion}
-\author{Erik Körner \and Kai Hainke \and Klemens Schölhorn}
+\author{Klemens Schölhorn \and Erik Körner \and Kai Hainke}
 
 % show toc on titlepage
 \setuptoc{toc}{leveldown}
@@ -88,7 +88,7 @@ Bandbreitenbeschränkungen und eine Bearbeitung in AWS mit Hilfe von EC2-Instanz
 aufgrund von finanziellen Einschränkungen nicht möglich war, haben wir unsere
 Analyse auf die WAT-Dateien beschränkt, die aus knapp 39000 Dateien zu
 durchschnittlich je 315 MiB bestehen und damit zusammen nur rund 12 TB groß sind.
-Davon konnten wir bis zum Vortrag 53 \% analysieren.
+Davon konnten wir bis zum Vortrag ca. 53 \% analysieren.
 
 \section{Übersicht}
 
@@ -129,15 +129,12 @@ kann.
 
 Dazu wurden neben einem csv-Writer ein standardkonformer WARC-Parser und eine
 Trie-Implementierung für den effizienten Lookup des \texttt{Public Suffix} einer
-Domain aus der \texttt{Public Suffix}-Liste implementiert.
-Außerdem wurde auf RapidJSON\footnote{\url{https://github.com/miloyip/rapidjson}}
-zum schnellen Parsen der WAT-Metadaten, auf die \texttt{URI}-Klasse des
+Domain aus der \texttt{Public Suffix}-Liste\footnote{\url{https://publicsuffix.org/}} implementiert. Außerdem wurde auf RapidJSON\footnote{\url{https://github.com/miloyip/rapidjson}}
+zum schnellen Parsen der WAT-Metadaten, auf die URI-Klasse des
 POCO-Projektes\footnote{\url{http://pocoproject.org/}} und auf
-TCLAP\footnote{\url{http://tclap.sourceforge.net/}} für das CLI zurückgegriffen.
+TCLAP\footnote{\url{http://tclap.sourceforge.net/}} für das CLI zurückgegriffen. Das Test-Framework Catch\footnote{\url{https://github.com/philsquared/Catch}} wurde für Unit-Tests der selbst geschriebenen Komponenten und für Integrationstests verwendet.
 
-Außerdem wurde das Test-Framework
-Catch\footnote{\url{https://github.com/philsquared/Catch}} für Unit-Tests der
-selbst geschriebenen Komponenten und für Integrationstests verwendet.
+Das beiliegende \texttt{Makefile} ist für den GCC C++-Compiler konzipiert, der Code lässt sich jedoch mit jedem standardkonformen C++11-Compiler übersetzen.
 
 \section{Hilfsmittel}
 
@@ -174,7 +171,6 @@ extrahiert und für die weiteren Analysen verwendet:
     Externe Links  & uint16            & Anzahl ausgehende Links
 \end{tabular}
 \end{center}
-
 
 
 \chapter{Ergebnisse}
