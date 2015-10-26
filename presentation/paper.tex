@@ -10,6 +10,7 @@
 \usepackage{stmaryrd}
 \usepackage{listings}
 \usepackage{amsmath}
+\usepackage{chngcntr}
 \usepackage[hidelinks]{hyperref}
 
 \usetikzlibrary{positioning}
@@ -29,6 +30,9 @@
 
 % no page number on titlepage
 \renewcommand*{\titlepagestyle}{empty}
+
+% continuous numbering of footnotes
+\counterwithout{footnote}{chapter}
 
 \begin{document}
 
@@ -115,13 +119,13 @@ zum schnellen Parsen der WAT-Metadaten, auf die URI-Klasse des
 POCO-Projektes\footnote{\url{http://pocoproject.org/}} und auf
 TCLAP\footnote{\url{http://tclap.sourceforge.net/}} für das CLI zurückgegriffen. Das Test-Framework Catch\footnote{\url{https://github.com/philsquared/Catch}} wurde für Unit-Tests der selbst geschriebenen Komponenten und für Integrationstests verwendet.
 
-Das beiliegende \texttt{Makefile} ist für den GCC C++-Compiler konzipiert, der Code lässt sich jedoch mit jedem standardkonformen C++11-Compiler übersetzen.
+Das beiliegende \texttt{Makefile} ist für den \texttt{GCC C++}-Compiler konzipiert, der Code lässt sich jedoch mit jedem standardkonformen \texttt{C++11}-Compiler übersetzen.
 
 \section{Hilfsmittel}
 
 Neben dem \texttt{meta-extractor} wurden noch einige Skripte u.\,a. zur
 Steuerung des Downloads und der Extraktion, dem Import in \texttt{MonetDB} und
-der Analyse in \texttt{R} geschrieben. Das erstgenannte ist etwas umfangreicher
+der Analyse in \texttt{R} geschrieben. Das erste Skript ist etwas umfangreicher
 und daher neben dem Hauptprogramm auch Teil des
 Projektrepositories\footnote{\url{https://github.com/klemens/ALI-CC/}}.
 
@@ -235,7 +239,7 @@ Außerdem zeigt sich hier abermals, dass asiatische Seiten stark unterrepräsent
 \end{center}
 
 \noindent
-Bei den verwendeten Webservern herrscht eine große Vielfalt (vlg. den großen \texttt{other}-Anteil), die von den beiden großen freien Webservern Apache und nginx angeführt wird.
+Bei den verwendeten Webservern herrscht eine große Vielfalt (vgl. den großen \texttt{other}-Anteil), die von den beiden großen freien Webservern Apache und nginx angeführt wird.
 
 \section{Verschlüsselung, Cookies und Kompression}
 
