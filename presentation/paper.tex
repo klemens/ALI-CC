@@ -61,7 +61,7 @@ Common Crawl verwendet für das Crawlen den CCBot, einen modifizierten Apache Nu
 
 Zur Speicherung der Crawls wird das Web Archive-Format (WARC) verwendet, das in ISO 28500\footnote{\url{http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf}} spezifiziert und an HTTP angelehnt ist. Eine WARC-Datei besteht aus mehreren einzelnen WARC-Records, wobei ein WARC-Record einen beliebigen Payload haben kann (z.\,B. HTTP oder JSON).
 
-Während des Craws werden drei verschiedene Ergebnisse erzeugt: Zuerst der Crawl an sich mit den kompletten HTTP-Konversationen, wobei Anfrage und Antwort als getrennte WARC-Records abgespeichert werden. Zusätzlich wird für jeden WARC-Record ein JSON-Metadaten-Record\footnote{\url{https://gist.github.com/Smerity/e750f0ef0ab9aa366558\#file-bbc-pretty-wat}} (WAT) erzeugt, der u.\,a. die kompletten HTTP-Header sowie eine Liste aller auf der Seite vorkommenden Links (inklusive der eingebundenen CSS/JavaScript-Dateien) enthält. Schließlich wird für jede HTTP-Antwort auch ein Reintext-Record (WET) erzeugt, der den automatisch aus dem HTML-Quelltext extrahierten Text enthält.
+Während des Crawls werden drei verschiedene Ergebnisse erzeugt: Zuerst der Crawl an sich mit den kompletten HTTP-Konversationen, wobei Anfrage und Antwort als getrennte WARC-Records abgespeichert werden. Zusätzlich wird für jeden WARC-Record ein JSON-Metadaten-Record\footnote{\url{https://gist.github.com/Smerity/e750f0ef0ab9aa366558\#file-bbc-pretty-wat}} (WAT) erzeugt, der u.\,a. die kompletten HTTP-Header sowie eine Liste aller auf der Seite vorkommenden Links (inklusive der eingebundenen CSS/JavaScript-Dateien) enthält. Schließlich wird für jede HTTP-Antwort auch ein Reintext-Record (WET) erzeugt, der den automatisch aus dem HTML-Quelltext extrahierten Text enthält.
 
 
 \chapter{Analyse}
@@ -271,7 +271,7 @@ Von allen Seiten enthalten etwa 84\% Links und 67\% externe Links. Ungefähr 18\
 
 \chapter{Textextraktion}
 
-In diesem Abschnitt vergleichen wir die Qualität der Textextraktion von Common Crawl mit dem an der Abteilung für Automatische Sprachverarbeitung der Universität Leipzig entwickelten Tool jWarcEx und Readability.js, das von Mozilla für die Lesenansicht im Firefox-Browser verwendet wird.
+In diesem Abschnitt vergleichen wir die Qualität der Textextraktion von Common Crawl mit dem an der Abteilung für Automatische Sprachverarbeitung der Universität Leipzig entwickelten Tool jWarcEx und Readability.js, das von Mozilla für die Leseansicht im Firefox-Browser verwendet wird.
 
 Da wir uns bei der Analyse wie oben beschrieben auf die Metadaten beschränken mussten, erfolgte die Analyse stichprobenartig anhand einiger Beispiele, wovon im Folgenden zwei näher erläutert werden.
 
