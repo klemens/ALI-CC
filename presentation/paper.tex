@@ -61,7 +61,7 @@ Common Crawl verwendet für das Crawlen den CCBot, einen modifizierten Apache Nu
 
 Zur Speicherung der Crawls wird das Web Archive-Format (WARC) verwendet, das in ISO 28500\footnote{\url{http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf}} spezifiziert und an HTTP angelehnt ist. Eine WARC-Datei besteht aus mehreren einzelnen WARC-Records, wobei ein WARC-Record einen beliebigen Payload haben kann (z.\,B. HTTP oder JSON).
 
-Während des Craws werden drei verschiedene Ergebnisse erzeugt: Zuerst der Crawl an sich mit den kompletten HTTP-Konversationen, wobei Anfrage und Antwort als getrennte WARC-Records abgespeichert werden. Zusätzlich wird für jedem WARC-Record ein JSON-Metadaten-Record\footnote{\url{https://gist.github.com/Smerity/e750f0ef0ab9aa366558\#file-bbc-pretty-wat}} (WAT) erzeugt, der u.\,a. die kompletten HTTP-Header sowie eine Liste aller auf der Seite vorkommenden Links (inklusive der eingebundenen CSS/JavaScript-Dateien) enthält. Schließlich wird für jede HTTP-Antwort auch ein Reintext-Record (WET) erzeugt, der den automatisch aus dem HTML-Quelltext extrahierten Text enthält.
+Während des Craws werden drei verschiedene Ergebnisse erzeugt: Zuerst der Crawl an sich mit den kompletten HTTP-Konversationen, wobei Anfrage und Antwort als getrennte WARC-Records abgespeichert werden. Zusätzlich wird für jeden WARC-Record ein JSON-Metadaten-Record\footnote{\url{https://gist.github.com/Smerity/e750f0ef0ab9aa366558\#file-bbc-pretty-wat}} (WAT) erzeugt, der u.\,a. die kompletten HTTP-Header sowie eine Liste aller auf der Seite vorkommenden Links (inklusive der eingebundenen CSS/JavaScript-Dateien) enthält. Schließlich wird für jede HTTP-Antwort auch ein Reintext-Record (WET) erzeugt, der den automatisch aus dem HTML-Quelltext extrahierten Text enthält.
 
 
 \chapter{Analyse}
@@ -152,8 +152,8 @@ extrahiert und für die weiteren Analysen verwendet:
     MIME-Typ       & string            & \textcolor{light-gray}{text/html}, \textcolor{light-gray}{application/xml}, \dots\\ \hline
     Charset        & string            & \textcolor{light-gray}{utf}, \textcolor{light-gray}{iso-8859}, \dots \\ \hline
     Verwendung CDN & bool              & CDN ja/nein \\ \hline
-    Interne Links  & uint16            & Anzahl relative Links + gleicher Host \\ \hline
-    Externe Links  & uint16            & Anzahl ausgehende Links
+    Interne Links  & uint16            & Anzahl relativer Links + gleicher Host \\ \hline
+    Externe Links  & uint16            & Anzahl ausgehender Links
 \end{tabular}
 \end{center}
 
@@ -187,7 +187,7 @@ Grundsätzlich scheinen die TLDs näherungsweise zipfverteilt zu sein.
     \input{images/selection_bias_clean.pdf_tex}
 \end{wrapfigure}
 
-Die vom Common Crawl erfassten Seiten stellen eine nicht randomisierte Stichprobe aus der Gesamtheit aller Websites dar. Daher unterliegen die Ergebnisse einer statistischen Verzerrung im Vergleich zur wahren Verteilung der Grundgesamtheit aller Websites, dem Selection Bias. Um abzuschätzen, in wie weit die Auswahl von Websites durch den Common Crawl Prozess im Vergleich zu einer randomisierten Auswahl verzerrt ist, vergleichen wir die Verteilung der TLDs mit Daten von Google. Auch diese Daten unterliegen natürlich dem Selection Bias, haben aber eine größere Stichprobengröße.
+Die von Common Crawl erfassten Seiten stellen eine nicht randomisierte Stichprobe aus der Gesamtheit aller Websites dar. Daher unterliegen die Ergebnisse einer statistischen Verzerrung im Vergleich zur wahren Verteilung der Grundgesamtheit aller Websites, dem Selection Bias. Um abzuschätzen, in wie weit die Auswahl von Websites durch den Common Crawl-Prozess im Vergleich zu einer randomisierten Auswahl verzerrt ist, vergleichen wir die Verteilung der TLDs mit Daten von Google. Auch diese Daten unterliegen natürlich dem Selection Bias, haben aber eine größere Stichprobengröße.
 
 Da Google selbst keine offiziellen Statistiken über die erfassten TLD bereitstellt, wurden die Daten über eine speziell formulierte Suchanfrage der Form \texttt{site:.com} erhoben. Dies liefert alle Seiten, die in Ihrer Domain den String .com enthalten, was näherungsweise alle Seiten der TLD .com sind. Auf diese Weise wurden die Trefferzahlen der 61 häufigsten Domains ermittelt und in Relation zueinander gesetzt. Aufgrund der nicht vollständigen Abdeckung aller TLDs sind die relativen Anteile geringfügig zu hoch.
 
@@ -265,7 +265,7 @@ Geringfügig weniger Seiten werden komprimiert (dh. mit \texttt{gzip} oder \text
 \centerline{Seiten mit den meisten (links), meisten internen (mitte, rot) und meisten externen (rechts, blau) Links}
 \vspace{-.2cm}
 
-Um die Reichweite des Crawls genauer zu beleuchten, betrachten wir die Verteilung und Art der Links, die auf den Seiten gefunden werden. Dabei unterscheiden wir zwischen internen Links, d.h. solche mit einem relativen Pfad bzw. mit dem gleichen Hostnamen als Ziel, und externe Links. In Bezug auf Reichweite sind besonders externe Links interessant, da nur durch diese neue Seiten von anderen Hosts in den Cralw mit einbezogen werden.
+Um die Reichweite des Crawls genauer zu beleuchten, betrachten wir die Verteilung und Art der Links, die auf den Seiten gefunden werden. Dabei unterscheiden wir zwischen internen Links, d.h. solche mit einem relativen Pfad bzw. mit dem gleichen Hostnamen als Ziel, und externen Links. In Bezug auf die Reichweite sind besonders externe Links interessant, da nur durch diese neue Seiten von anderen Hosts in den Crawl mit einbezogen werden.
 
 Von allen Seiten enthalten etwa 84\% Links und 67\% externe Links. Ungefähr 18\% aller Links sind extern, der Rest verlinkt intern. Seiten mit sehr vielen externen/internen Links enthalten jedoch nahezu ausschließlich Links des selben Typs, die Verteilung ist eher asymmetrisch.
 
