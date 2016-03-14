@@ -11,6 +11,7 @@
 \usepackage{listings}
 \usepackage{amsmath}
 \usepackage{chngcntr}
+\usepackage{textcomp}
 \usepackage[hidelinks]{hyperref}
 
 \usetikzlibrary{positioning}
@@ -268,6 +269,25 @@ Geringfügig weniger Seiten werden komprimiert (dh. mit \texttt{gzip} oder \text
 Um die Reichweite des Crawls genauer zu beleuchten, betrachten wir die Verteilung und Art der Links, die auf den Seiten gefunden werden. Dabei unterscheiden wir zwischen internen Links, d.h. solche mit einem relativen Pfad bzw. mit dem gleichen Hostnamen als Ziel, und externen Links. In Bezug auf die Reichweite sind besonders externe Links interessant, da nur durch diese neue Seiten von anderen Hosts in den Crawl mit einbezogen werden.
 
 Von allen Seiten enthalten etwa 84\% Links und 67\% externe Links. Ungefähr 18\% aller Links sind extern, der Rest verlinkt intern. Seiten mit sehr vielen externen/internen Links enthalten jedoch nahezu ausschließlich Links des selben Typs, die Verteilung ist eher asymmetrisch.
+
+\section{Sprache}
+
+\begin{center}
+    \includegraphics[width=.9\textwidth]{plots/plot_lang_top10}
+\end{center}
+
+Die Analyse der TLDs am Anfang des Kapitels kann nur einen groben Überblick über die Sprachverteilung geben. Aus diesem Grund wurde -- nach dem Vortrag -- zusätzlich zu den Metadaten auch ein Teil des eigentlichen Crawls analysiert. Dabei wurde eine zufällige Stichprobe mit 242 von insgesamt ca. 33000 WARC-Dateien (gepackt je ca. 1 GB) heruntergeladen und der Text extrahiert. Für die resultierenden knapp 11 Millionen Dokumente wurde anschließend mit dem LangSepa-Werkzeug der Fakultät jeweils die Sprache bestimmt.
+
+Wie erwartet ist der Crawl sehr stark von Englisch dominiert. Die einzigen nicht-europäischen Sprachen innerhalb der ersten 20 (über 95 \% aller Dokumente) sind Indonesisch (3 \textperthousand), Vietnamesisch (1,7 \textperthousand) und Arabisch (1,6 \textperthousand). Koreanisch folgt auf Platz 24 mit 0,8 \textperthousand\ und Chinesisch auf Platz 31 mit 0,5 \textperthousand. Insgesamt wurden 367 verschiedene Sprachen erkannt.
+
+\begin{wrapfigure}{r}{.57\textwidth}
+    \includegraphics[width=.6\textwidth]{plots/plot_lang_log10.pdf}
+\end{wrapfigure}
+
+LangSepa scheint manchmal Probleme bei der Unterscheidung ähnlicher Sprachen zu haben. So haben Scots (27,9 \textperthousand) und das nigerianische Pidgin (1,9 \textperthousand) einen unrealistisch hohen Anteil. Da beide jedoch dem Englischen sehr ähnlich sind, kann man hier von einer Fehlklassifizierung eigentlich englischer Dokumente ausgehen.
+
+Die Verteilung der Sprachen entspricht -- deutlicher noch als die der TLDs -- einer Zipf-Verteilung.
+
 
 \chapter{Textextraktion}
 
