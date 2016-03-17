@@ -6,10 +6,13 @@ Seminarvortrag im Modul „Anwendungen Linguistische Informatik“
 
 Analyse des [CommonCrawl][CC] Crawl-Prozesses, speziell bezüglich globaler
 Abdeckung und Qualität der Textextraktion im Vergleich zu an der Universität
-Leipzig benutzten Werkzeugen.
+Leipzig benutzten Werkzeugen. Zusätzlich sollen anhand der Metadaten der
+gecrawlten Seiten Statistiken über die Verteilung bestimmter Merkmale im Web
+erstellt werden.
 
-Zusätzlich sollen anhand der Metadaten der gecrawlten Seiten Statistiken über
-die Verteilung bestimmter Merkmale im Web erstellt werden.
+Details zur Analyse und den Ergebnissen finden sich in der
+[Abschlusspräsentation][presentation] und der [Seminararbeit][paper].
+Der zugehörige LaTeX-Quelltext befindet sich im Ordner `presentation`.
 
 ## Daten
 
@@ -40,5 +43,7 @@ shuffle-lines ist ein kleines Hilfsprogramm, um die Zeilen einer Daten zufällig
 anzuordnen. Dabei kommt der PRNG Mersenne-Twister 19937 zum Einsatz, wobei der
 Seed manuell festgelegt werden kann.
 
+[paper]: ./presentation/paper.pdf
+[presentation]: ./presentation/presentation.pdf
 [CC]: https://commoncrawl.org/
 [Datenextraktion]: https://github.com/klemens/ALI-CC/wiki/Datenextraktion
